@@ -56,7 +56,7 @@ public class Investment implements Scores {
 //							System.out.println(graph.getVertex(e.getNeighbor(sources.get(i)).getLabel()).getNeighbors());
 								claimSet = graph.getVertex(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel()).getNeighborCount();
 //								System.out.println(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel() + ":" +claimSet);
-								System.out.println(investment);
+//								System.out.println(investment);
 								investment += graph.getVertex(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel()).getScore()/claimSet;
 //								System.out.println(investment);
 						}
