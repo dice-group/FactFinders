@@ -44,7 +44,7 @@ public class Testing {
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
 		String testTriples = "./src/data/testtriples.tsv";
-		String resultFile = "./src/data/Investment.nt";
+		String resultFile = "./src/data/TruthFinder.nt";
 		BufferedReader reader = new BufferedReader(new FileReader(testTriples));
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
@@ -84,8 +84,8 @@ public class Testing {
 		
 //		inv.trustScore(response.graph, response.sources);
 		for(int i = 0; i < 20; i++) {
-			inv.trustScore(response.graph, response.sources);
-	        inv.beliefScore(response.graph, response.claims);
+			tf.trustScore(response.graph, response.sources);
+	        tf.beliefScore(response.graph, response.claims);
 	       }
 		
 		dataRow = reader.readLine();

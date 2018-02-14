@@ -11,6 +11,7 @@ public class AverageLog implements Scores {
 	private double maxScore = 0;
 	private double avgScore = 0;
 	private int claimSet = 0;
+	private double beliefScore = 0;
 	/**
 	 * (Originally by Pasternack) Computing trust score as an average of belief in its claims
 	 * It over-estimates the trustworthiness of a source with relatively few claims
@@ -24,9 +25,12 @@ public class AverageLog implements Scores {
 				for(Edge e : graph.getVertex(claims.get(i).getLabel()).getNeighbors()) {
 					//System.out.println(e.getNeighbor(sources.get(i)).toString());
 					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-					graph.getVertex(claims.get(i).getLabel()).setScore(graph.getVertex(claims.get(i).getLabel()).getScore() + e.getNeighbor(claims.get(i)).getScore());
+//					graph.getVertex(claims.get(i).getLabel()).setScore(graph.getVertex(claims.get(i).getLabel()).getScore() + e.getNeighbor(claims.get(i)).getScore());
+					beliefScore +=  e.getNeighbor(claims.get(i)).getScore();
 					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
 				}
+				graph.getVertex(claims.get(i).getLabel()).setScore(beliefScore);
+				beliefScore = 0;
 			}
 		}
 		maxScore = maxScore(graph, claims); 
@@ -41,11 +45,13 @@ public class AverageLog implements Scores {
 				for(Edge e : graph.getVertex(sources.get(i).getLabel()).getNeighbors()) {
 					//System.out.println(e.getNeighbor(sources.get(i)).toString());
 					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-					avgScore = graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore();
+//					avgScore = graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore();
+					avgScore += e.getNeighbor(sources.get(i)).getScore();
 				}
 				claimSet = graph.getVertex(sources.get(i).getLabel()).getNeighborCount();
 				avgScore = (avgScore / claimSet)*Math.log10(claimSet);
 				graph.getVertex(sources.get(i).getLabel()).setScore(avgScore);
+				avgScore = 0;
 				//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
 			}
 		}

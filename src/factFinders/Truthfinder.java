@@ -50,7 +50,8 @@ public class Truthfinder implements Scores {
 				for(Edge e : graph.getVertex(sources.get(i).getLabel()).getNeighbors()) {
 					//System.out.println(e.getNeighbor(sources.get(i)).toString());
 					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-					truthScore = graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore();
+//					truthScore = graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore();
+					truthScore += e.getNeighbor(sources.get(i)).getScore();
 				}
 				claimSet = graph.getVertex(sources.get(i).getLabel()).getNeighbors().size();
 //				System.out.println(claimSet);

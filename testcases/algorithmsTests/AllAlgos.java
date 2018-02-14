@@ -39,26 +39,7 @@ public class AllAlgos {
 		 */
 		claim = "c1";
 		sources.add("s1");
-		sources.add("s2");
 		sources.add("s3");
-		training.put(claim, sources);
-		
-		claim = new String();
-		sources = new ArrayList<String>();
-		
-		claim = "c2";
-		sources.add("s1");
-		sources.add("s4");
-		sources.add("s5");
-		training.put(claim, sources);
-		
-		claim = new String();
-		sources = new ArrayList<String>();
-		
-		claim = "c3";
-		sources.add("s1");
-		sources.add("s2");
-		sources.add("s6");
 		training.put(claim, sources);
 		
 		CreateGraph create = new CreateGraph(training);
@@ -71,28 +52,9 @@ public class AllAlgos {
 		/**
 		 * Testing
 		 */
-		result.claim = "c4";
+		result.claim = "c2";
 		result.sources.add("s1");
-		result.sources.add("s7");
-		result.sources.add("s8");
-		response = newEdge.addEdge(response, result);
-		response.graph = beliefs.initialize(response.graph, result.claim, "testing");
-		
-		result = new Result();
-		
-		result.claim = "c5";
-		result.sources.add("s9");
-		result.sources.add("s10");
-		result.sources.add("s11");
-		response = newEdge.addEdge(response, result);
-		response.graph = beliefs.initialize(response.graph, result.claim, "testing");
-		
-		result = new Result();
-		
-		result.claim = "c6";
 		result.sources.add("s2");
-		result.sources.add("s5");
-		result.sources.add("s8");
 		response = newEdge.addEdge(response, result);
 		response.graph = beliefs.initialize(response.graph, result.claim, "testing");
 	}
@@ -101,66 +63,54 @@ public class AllAlgos {
 	public void graphTest() {
 		assertNotNull(response.graph.vertexKeys().size());
 		assertNotNull(response.graph.getEdges().size());
-		assertEquals(response.claims.size(), 6);
-		assertEquals(response.sources.size(), 11);
-		assertEquals(response.graph.vertexKeys().size(), 17);
-		assertEquals(response.graph.getEdges().size(), 18);
+		assertEquals(response.claims.size(), 2);
+		assertEquals(response.sources.size(), 3);
+		assertEquals(response.graph.vertexKeys().size(), 5);
+		assertEquals(response.graph.getEdges().size(), 4);
 	}
 	
 	@Test
 	public void sumsTest() {
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 2; i++) {
 	 	   	sums.trustScore(response.graph, response.sources);
 	        sums.beliefScore(response.graph, response.claims);
 			}
-		System.out.println("Finalized Sums trust scores are");
-
-		  for(Vertex v : response.graph.vertices()) {
-			   if(response.claims.contains(v))
-				  System.out.println(v.getLabel() +"="+ v.getScore());
-		  }
+		
+		assertEquals(response.graph.getVertex("c1").getScore(), 1, 0.01);
+		assertEquals(response.graph.getVertex("c2").getScore(), 0.93, 0.01);
 	}
 	
 	@Test
 	public void AvgLogTest() {
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 2; i++) {
 	 	   	avg.trustScore(response.graph, response.sources);
 	        avg.beliefScore(response.graph, response.claims);
 			}
-		System.out.println("Finalized Avg-Log trust scores are");
-
-		  for(Vertex v : response.graph.vertices()) {
-			   if(response.claims.contains(v))
-				  System.out.println(v.getLabel() +"="+ v.getScore());
-		  }
+		
+		assertEquals(response.graph.getVertex("c1").getScore(), 1, 0.01);
+		assertEquals(response.graph.getVertex("c2").getScore(), 1, 0.01);
 	}
 	
 	@Test
 	public void investmnetTest() {
-		for(int i = 0; i < 20; i++) {
+		inv.trustScore(response.graph, response.sources);
+		for(int i = 0; i < 2; i++) {
 	 	   	inv.trustScore(response.graph, response.sources);
 	        inv.beliefScore(response.graph, response.claims);
 			}
-		System.out.println("Finalized Investmnets trust scores are");
-
-		  for(Vertex v : response.graph.vertices()) {
-			   if(response.claims.contains(v))
-				  System.out.println(v.getLabel() +"="+ v.getScore());
-		  }
+		
+		assertEquals(response.graph.getVertex("c1").getScore(), 1, 0.01);
+		assertEquals(response.graph.getVertex("c2").getScore(), 0.22, 0.01);
 	}
 	
 	@Test
 	public void tfTest() {
-		for(int i = 0; i < 20; i++) {
+		for(int i = 0; i < 2; i++) {
 	 	   	tf.trustScore(response.graph, response.sources);
 	        tf.beliefScore(response.graph, response.claims);
 			}
-		System.out.println("Finalized TruthFinder trust scores are");
-
-		  for(Vertex v : response.graph.vertices()) {
-			   if(response.claims.contains(v))
-				  System.out.println(v.getLabel() +"="+ v.getScore());
-		  }
+		assertEquals(response.graph.getVertex("c1").getScore(), 1, 0.01);
+		assertEquals(response.graph.getVertex("c2").getScore(), 0.99, 0.01);
 	}
 
 }

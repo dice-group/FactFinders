@@ -26,10 +26,12 @@ public class Investment implements Scores {
 					//System.out.println(e.getNeighbor(sources.get(i)).toString());
 					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
 					claimSet = graph.getVertex(e.getNeighbor(claims.get(i)).getLabel()).getNeighborCount();
-					invScore = graph.getVertex(claims.get(i).getLabel()).getScore() + (e.getNeighbor(claims.get(i)).getScore()/(double)claimSet);
+//					invScore = graph.getVertex(claims.get(i).getLabel()).getScore() + (e.getNeighbor(claims.get(i)).getScore()/(double)claimSet);
+					invScore += (e.getNeighbor(claims.get(i)).getScore()/(double)claimSet);
 				}
 				invScore = Math.pow(invScore, 1.2);
 				graph.getVertex(claims.get(i).getLabel()).setScore(invScore);
+				invScore = 0;
 				//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
 			}
 		}
@@ -58,14 +60,14 @@ public class Investment implements Scores {
 //								System.out.println(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel() + ":" +claimSet);
 //								System.out.println(investment);
 								investment += graph.getVertex(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel()).getScore()/claimSet;
-//								System.out.println(investment);
+//								System.out.println(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel() + " : " +investment);
 						}
 						claimSet = graph.getVertex(sources.get(i).getLabel()).getNeighborCount();
 //						System.out.println(sources.get(i).getLabel()+ ">" +claimSet);
 						invScore = graph.getVertex(sources.get(i).getLabel()).getScore()/((double)claimSet*investment);
-//						System.out.println(invScore);
+//						System.out.println(graph.getVertex(sources.get(i).getLabel()).getScore());
 						invScore += e.getNeighbor(sources.get(i)).getScore()*invScore;
-//						System.out.println(invScore);
+//						System.out.println(graph.getVertex(sources.get(i).getLabel()) + " : " + invScore);
 					}
 //					System.out.println("The new trust score for " +sources.get(i)+ ":"+ invScore);
 					graph.getVertex(sources.get(i).getLabel()).setScore(invScore);

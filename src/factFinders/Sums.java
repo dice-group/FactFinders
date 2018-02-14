@@ -9,6 +9,7 @@ import graphPlotter.Vertex;
 public class Sums implements Scores {
 
 	private double maxScore = 0;
+	private double score = 0;
 	/**
 	 * Hubs and Authorities (Kleinberg, 1999) adapted for claims and sources, 
 	 * where sources refers as hubs and claims refers to authorities.
@@ -24,9 +25,12 @@ public class Sums implements Scores {
 				for(Edge e : graph.getVertex(claims.get(i).getLabel()).getNeighbors()) {
 //					System.out.println(e.getNeighbor(claims.get(i)).toString());
 //					System.out.println(claims.get(i).getLabel() + graph.getVertex(claims.get(i).getLabel()).getScore());
-					graph.getVertex(claims.get(i).getLabel()).setScore(graph.getVertex(claims.get(i).getLabel()).getScore() + e.getNeighbor(claims.get(i)).getScore());
-//					System.out.println(claims.get(i).getLabel() + graph.getVertex(claims.get(i).getLabel()).getScore());
+//					graph.getVertex(claims.get(i).getLabel()).setScore(graph.getVertex(claims.get(i).getLabel()).getScore() + e.getNeighbor(claims.get(i)).getScore());
+					score +=  e.getNeighbor(claims.get(i)).getScore();
+//					System.out.println(score);
 				}
+				graph.getVertex(claims.get(i).getLabel()).setScore(score);
+				score = 0;
 			}
 		}
 		maxScore = maxScore(graph, claims); 
@@ -41,9 +45,12 @@ public class Sums implements Scores {
 				for(Edge e : graph.getVertex(sources.get(i).getLabel()).getNeighbors()) {
 //					System.out.println(e.getNeighbor(sources.get(i)).toString());
 //					System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-					graph.getVertex(sources.get(i).getLabel()).setScore(graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore());
-//					System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
+//					graph.getVertex(sources.get(i).getLabel()).setScore(graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore());
+					score += e.getNeighbor(sources.get(i)).getScore();
+//					System.out.println(score);
 				}
+				graph.getVertex(sources.get(i).getLabel()).setScore(score);
+				score = 0;
 			}
 		}
 		maxScore = maxScore(graph, sources); 
