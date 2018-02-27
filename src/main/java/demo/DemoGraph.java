@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import elasticSearch.RDFTriplizer;
 import elasticSearch.SearchResult;
-import elasticSearch.SearchWiki;
+import elasticSearch.SearchWordnetPatterns;
 import factFinders.AverageLog;
 import factFinders.InitializeBeliefs;
 import factFinders.Investment;
@@ -37,7 +37,7 @@ public class DemoGraph {
 //       PooledInvestment pool = new PooledInvestment();
 //       Truthfinder tf = new Truthfinder();
 //       RDFTriplizer triplify = new RDFTriplizer();
-//       SearchWiki search = new SearchWiki();
+//       SearchWordnetPatterns search = new SearchWordnetPatterns();
 //       String queryClaim = new String();
 //       SearchResult result = new SearchResult();
 //       

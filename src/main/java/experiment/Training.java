@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import demo.CreateGraph;
+import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
-import elasticSearch.SearchWiki;
+import elasticSearch.SearchWordnetPatterns;
 import factFinders.InitializeBeliefs;
 
 /**
@@ -24,9 +25,10 @@ public class Training {
 		TrainingResponse response = new TrainingResponse();
 		InitializeBeliefs beliefs = new InitializeBeliefs();
    
-		SearchWiki search = new SearchWiki();
+//		SearchWordnetPatterns search = new SearchWordnetPatterns();
+		SearchBOAPatterns search = new SearchBOAPatterns();
 		
-		String inputFile = "./src/main/resources/true_claims.tsv";
+		String inputFile = "./src/main/resources/data/true_claims.tsv";
 		BufferedReader TSVFile;
 		TSVFile = new BufferedReader(new FileReader(inputFile));
 		String dataRow = TSVFile.readLine();

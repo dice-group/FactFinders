@@ -12,8 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import demo.CreateGraph;
+import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
-import elasticSearch.SearchWiki;
+import elasticSearch.SearchWordnetPatterns;
 import factFinders.AverageLog;
 import factFinders.InitializeBeliefs;
 import factFinders.Investment;
@@ -35,7 +36,8 @@ public class SingleClaimTest {
 		SearchResult result = new SearchResult();
 		TrainingResponse response = new TrainingResponse();
 		Training trainingData = new Training();
-		SearchWiki search = new SearchWiki();
+//		SearchWordnetPatterns search = new SearchWordnetPatterns();
+		SearchBOAPatterns search = new SearchBOAPatterns();
 		CreateGraph newEdge = new CreateGraph();
 		InitializeBeliefs beliefs = new InitializeBeliefs();
 		Sums sums = new Sums();
@@ -43,8 +45,8 @@ public class SingleClaimTest {
 		Truthfinder tf = new Truthfinder();
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
-		String testTriples = "./src/main/resources/testtriples.tsv";
-		String resultFile = "./src/main/resources/SingleTF.nt";
+		String testTriples = "./src/main/resources/data/testtriples.tsv";
+		String resultFile = "./src/main/resources/newExperiments/SingleTF.nt";
 		BufferedReader reader = new BufferedReader(new FileReader(testTriples));
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);

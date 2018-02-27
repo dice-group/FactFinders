@@ -11,8 +11,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import demo.CreateGraph;
+import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
-import elasticSearch.SearchWiki;
+import elasticSearch.SearchWordnetPatterns;
 import factFinders.AverageLog;
 import factFinders.InitializeBeliefs;
 import factFinders.Investment;
@@ -35,7 +36,8 @@ public class Testing {
 		SearchResult result = new SearchResult();
 		TrainingResponse response = new TrainingResponse();
 		Training trainingData = new Training();
-		SearchWiki search = new SearchWiki();
+//		SearchWordnetPatterns search = new SearchWordnetPatterns();
+		SearchBOAPatterns search = new SearchBOAPatterns();
 		CreateGraph newEdge = new CreateGraph();
 		InitializeBeliefs beliefs = new InitializeBeliefs();
 		Sums sums = new Sums();
@@ -43,8 +45,8 @@ public class Testing {
 		Truthfinder tf = new Truthfinder();
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
-		String testTriples = "./src/main/resources/testtriples.tsv";
-		String resultFile = "./src/main/resources/Investment.nt";
+		String testTriples = "./src/main/resources/data/testtriples.tsv";
+		String resultFile = "./src/main/resources/newExperiments/Sum.nt";
 		BufferedReader reader = new BufferedReader(new FileReader(testTriples));
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
@@ -82,10 +84,10 @@ public class Testing {
 		
 //		For Investmnet open the comment below
 		
-		inv.trustScore(response.graph, response.sources);
+//		inv.trustScore(response.graph, response.sources);
 		for(int i = 0; i < 20; i++) {
-			inv.trustScore(response.graph, response.sources);
-	        inv.beliefScore(response.graph, response.claims);
+			sums.trustScore(response.graph, response.sources);
+	        sums.beliefScore(response.graph, response.claims);
 	       }
 		
 		dataRow = reader.readLine();

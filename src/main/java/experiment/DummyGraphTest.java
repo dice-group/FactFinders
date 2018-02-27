@@ -31,7 +31,7 @@ public class DummyGraphTest {
 		InitializeBeliefs beliefs = new InitializeBeliefs();
 		CreateGraph newEdge = new CreateGraph();
 		SearchResult result = new SearchResult();
-		FileWriter writer = new FileWriter("./src/main/resources/clueweb_graph.tsv");
+		FileWriter writer = new FileWriter("./src/main/resources/data/clueweb_graph.tsv");
 		Sums sums = new Sums();
 		AverageLog avg = new AverageLog();
 		Truthfinder tf = new Truthfinder();

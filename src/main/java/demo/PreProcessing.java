@@ -28,7 +28,7 @@ public class PreProcessing {
 	  
 	  public static ArrayList<String> extraction() throws IOException {
 		BufferedReader TSVFile;
-		TSVFile = new BufferedReader(new FileReader("./src/main/resources/true_claims.tsv"));
+		TSVFile = new BufferedReader(new FileReader("./src/main/resources/data/true_claims.tsv"));
 		String dataRow = TSVFile.readLine(); // Read first line.
 		ArrayList<String> facts = new ArrayList<String>();
 			try {
@@ -48,7 +48,7 @@ public class PreProcessing {
 	  }
 	  
 	  public static void triplization(ArrayList<String> facts) throws IOException {
-		  FileWriter writer = new FileWriter("./src/main/resources/triples.tsv");
+		  FileWriter writer = new FileWriter("./src/main/resources/data/triples.tsv");
 		  facts.remove(0);
 
 		  for(String fact : facts) {

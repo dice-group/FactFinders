@@ -15,7 +15,7 @@ User is required to create an internal Properties.xml file with the content give
       value="net.didion.jwnl.princeton.data.PrincetonWN17FileDictionaryElementFactory"/>
     <param name="file_manager" value="net.didion.jwnl.dictionary.file_manager.FileManagerImpl">
       <param name="file_type" value="net.didion.jwnl.princeton.file.PrincetonRandomAccessDictionaryFile"/>
-      <param name="dictionary_path" value="PATH TO LOCAL DIRECTORY WHERE THE "dict" FOLDER IS PLACED/>
+      <param name="dictionary_path" value="PATH TO LOCAL DIRECTORY WHERE THE (dict) FOLDER IS PLACED"/>
     </param>
   </dictionary>
   <resource class="PrincetonResource"/>

@@ -2,3 +2,7 @@
 /dict
 /bin
 Properties.xml
+.classpath
+.project
+.settings/
+

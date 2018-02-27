@@ -42,9 +42,9 @@ public class RDFTriplizer {
 	
 	private static String triplify(Model input) throws IOException {
 		Set<Resource> set = new HashSet<Resource>();
-		String file = "./src/main/resources/testtriples.tsv";
+		String file = "./src/main/resources/data/testtriples.tsv";
 		FileWriter writer = new FileWriter(file);
-		FileWriter test = new FileWriter("./src/main/resources/Sum.nt");
+		FileWriter test = new FileWriter("./src/main/resources/data/Sum.nt");
 		StmtIterator iter= input.listStatements();
 		String sub = new String();
 		String obj = new String();
