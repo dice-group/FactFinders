@@ -17,7 +17,7 @@ import factFinders.Investment;
 import factFinders.Sums;
 import factFinders.Truthfinder;
 
-public class GraphTests {
+public class RemoveEdgeTest {
 
 	public String claim = new String();
 	public ArrayList<String> sources = new ArrayList<String>();
@@ -40,7 +40,6 @@ public class GraphTests {
 		sources.add("s1");
 		sources.add("s3");
 		sources.add("s2");
-		sources.add("s6");
 		training.put(claim, sources);
 		
 		CreateGraph create = new CreateGraph(training);
@@ -57,19 +56,19 @@ public class GraphTests {
 		result.sources.add("s1");
 		result.sources.add("s2");
 		result.sources.add("s3");
-		result.sources.add("s4");
 		response = newEdge.addEdge(response, result);
 		response.graph = beliefs.initialize(response.graph, result.claim, "testing");
 	}
 	
 	@Test
-	public void graphTest() {
+	public void edgeRemovalTest() {
+		response = newEdge.removeEdge(response, result);
 		assertNotNull(response.graph.vertexKeys().size());
 		assertNotNull(response.graph.getEdges().size());
-		assertEquals(response.claims.size(), 2);
-		assertEquals(response.sources.size(), 5);
-		assertEquals(response.graph.vertexKeys().size(), 7);
-		assertEquals(response.graph.getEdges().size(), 8);
+		assertEquals(response.claims.size(), 1);
+		assertEquals(response.sources.size(), 3);
+		assertEquals(response.graph.vertexKeys().size(), 4);
+		assertEquals(response.graph.getEdges().size(), 3);
 	}
 
 }

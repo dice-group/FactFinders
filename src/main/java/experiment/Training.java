@@ -29,8 +29,7 @@ public class Training {
 		SearchBOAPatterns search = new SearchBOAPatterns();
 		
 		String inputFile = "./src/main/resources/data/true_claims.tsv";
-		BufferedReader TSVFile;
-		TSVFile = new BufferedReader(new FileReader(inputFile));
+		BufferedReader TSVFile = new BufferedReader(new FileReader(inputFile));
 		String dataRow = TSVFile.readLine();
    
 		try {

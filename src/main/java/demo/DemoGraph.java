@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import elasticSearch.RDFTriplizer;
+import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
 import elasticSearch.SearchWordnetPatterns;
 import factFinders.AverageLog;
@@ -28,7 +29,7 @@ public class DemoGraph {
    
    public static void main(String[] args) throws IOException{
        
-//	   FileWriter writer = new FileWriter("./src/data/GraphPlotter.txt");
+////	   FileWriter writer = new FileWriter("./src/data/GraphPlotter.txt");
 //       String factfinder = "Sums";
 //       InitializeBeliefs beliefs = new InitializeBeliefs();
 //       Sums sums = new Sums();
@@ -37,9 +38,10 @@ public class DemoGraph {
 //       PooledInvestment pool = new PooledInvestment();
 //       Truthfinder tf = new Truthfinder();
 //       RDFTriplizer triplify = new RDFTriplizer();
-//       SearchWordnetPatterns search = new SearchWordnetPatterns();
+////       SearchWordnetPatterns search = new SearchWordnetPatterns();
+       SearchBOAPatterns search = new SearchBOAPatterns();
 //       String queryClaim = new String();
-//       SearchResult result = new SearchResult();
+       SearchResult result = new SearchResult();
 //       
 //       Graph graph = new Graph();
 //       ArrayList<Vertex> claims = new ArrayList<Vertex>();
@@ -47,20 +49,21 @@ public class DemoGraph {
 //       ArrayList<String> pageTitles = new ArrayList<String>();
 //       HashMap<String, ArrayList<String>> graphBuilder = new HashMap<String, ArrayList<String>>();
 //       //CreateGraph create = new CreateGraph();
-//       
-//       String inputFile = "/home/datascienceadmin/eclipse-workspace/FactFinders/src/data/Dataset.ttl";
+       
+//       String inputFile = "/home/datascienceadmin/eclipse-workspace/FactFinders/src/data/train.ttl";
 //       String outputFile = triplify.triplize(inputFile);
-//       
-////       result = search.query("NeXt	california");
-//       
+       
+       result = search.query("Katy Perry	spouse	Russell Brand");
+//       result = search.query("The Right Stuff (film)	starring	Harry Shearer");
+       
 //       BufferedReader TSVFile;
 //       TSVFile = new BufferedReader(new FileReader(outputFile));
 //       String dataRow = TSVFile.readLine();
 //       
 //       try {
 //	        while (dataRow != null){
-////		       	result = search.query(dataRow);
-//	        	result = search.query("Albert Einstein Nobel Prize in Physics");
+//		       	result = search.query(dataRow);
+////	        	result = search.query("Nokia	foundationPlace	Nokia");
 //		       	if(result != null) {
 //		       	 graphBuilder.put(result.claim, result.sources);
 //		       		writer.append(result.claim);

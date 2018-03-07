@@ -3,8 +3,6 @@ package demo;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.omg.CORBA.Request;
-
 import elasticSearch.SearchResult;
 import experiment.TrainingResponse;
 import graphPlotter.Edge;
@@ -68,36 +66,56 @@ public class CreateGraph {
 						if(sources.get(i).getLabel().equals(source))
 							flag = 1;
 					}
-					if(flag == 0)
+					if(flag == 0) {
 						sources.add(new Vertex(source));
+						graph.addVertex(new Vertex(source), false);
+					}
 				}
 				else
+				{
 					sources.add(new Vertex(source));
+					graph.addVertex(new Vertex(source), false);
+				}
 				flag = 0;
 			}
 		}
-    	for(int i = 0; i < sources.size(); i++)
-    		graph.addVertex(sources.get(i), false);
+		
+//    	for(int i = 0; i < sources.size(); i++)
+//    		graph.addVertex(sources.get(i), false);
     	
 		for(String claim: buildGraph.keySet()) {
 			claims.add(new Vertex(claim));
+			graph.addVertex(new Vertex(claim), false);
+
+//			System.out.println(buildGraph.get(claim));
+			for(String source: buildGraph.get(claim)) {
+				if(sources.contains(graph.getVertex(source))) {
+  					graph.addEdge(graph.getVertex(claim), graph.getVertex(source));
+  					graph.getVertex(graph.getVertex(claim).getLabel()).addNeighbor(new Edge(graph.getVertex(claim), graph.getVertex(source)));
+  					graph.getVertex(graph.getVertex(source).getLabel()).addNeighbor(new Edge(graph.getVertex(claim), graph.getVertex(source)));
+				}
+			} 
+		   
 		}
-    	for(int i = 0; i < claims.size(); i++)
-    		graph.addVertex(claims.get(i), false);
     	
-	   for(String claim: buildGraph.keySet()){
-		 for(int i = 0; i < claims.size(); i++) {
-			 if(claim.equals(claims.get(i).getLabel())) {
-				for(String source: buildGraph.get(claim)) {
-					for(int j = 0; j < sources.size(); j++) {
-						if(source.equals(sources.get(j).getLabel())) {
-		  					graph.addEdge(claims.get(i), sources.get(j));
-						}
-					}
-				} 
-			 }
-		 }
-	   }
+//		for(int i = 0; i < claims.size(); i++)
+//    		graph.addVertex(claims.get(i), false);
+    	
+//	   for(String claim: buildGraph.keySet()){
+//		 for(int i = 0; i < claims.size(); i++) {
+//			 if(claim.equals(claims.get(i).getLabel())) {
+//				for(String source: buildGraph.get(claim)) {
+//					for(int j = 0; j < sources.size(); j++) {
+//						if(source.equals(sources.get(j).getLabel())) {
+//		  					graph.addEdge(claims.get(i), sources.get(j));
+//		  					graph.getVertex(claims.get(i).getLabel()).addNeighbor(new Edge(claims.get(i), sources.get(j)));
+//		  					graph.getVertex(sources.get(j).getLabel()).addNeighbor(new Edge(claims.get(i), sources.get(j)));
+//						}
+//					}
+//				} 
+//			 }
+//		 }
+//	   }
 	   
 //	   for(int i = 0; i < edges.size(); i++) {
 //     	   System.out.println(edges.get(i).toString());
@@ -105,82 +123,110 @@ public class CreateGraph {
     }
     
     public TrainingResponse addEdge(TrainingResponse response, SearchResult result) {
-    	System.out.println(result.claim);
+//    	System.out.println(result.claim);
     	response.claims.add(new Vertex(result.claim));
     	
     	response.graph.addVertex(new Vertex(result.claim), false);
 		
-    	System.out.println(result.sources);
+//    	System.out.println(result.sources);
     	for(String source: result.sources) {
 			if(response.sources.size() != 0) {
 				for(int i=0; i < response.sources.size() ;i++) {
 					if(response.sources.get(i).getLabel().equals(source))
 						flag = 1;
 				}
-				if(flag == 0)
+				if(flag == 0) {
 					response.sources.add(new Vertex(source));
+					response.graph.addVertex(new Vertex(source), false);
+				}
 			}
 			else
+			{
 				response.sources.add(new Vertex(source));
+				response.graph.addVertex(new Vertex(source), false);
+			}
 			flag = 0;
 		}
 		
 //    	System.out.println(response.sources);
-    	for(String source: result.sources)
-			response.graph.addVertex(new Vertex(source), false);
+//    	for(String source: result.sources)
+//			response.graph.addVertex(new Vertex(source), false);
     	
-    	for(String claim : response.graph.vertexKeys()) {
-    		if(result.claim.equals(claim)) {
-    			for(String src : result.sources) {
-    				for(String source : response.graph.vertexKeys()) {
-    					if(source.equals(src)) {
-    						response.graph.addEdge(response.graph.getVertex(claim), response.graph.getVertex(source));
-    					}
-    				}
-    			}
-    		}
-    	}
+		for(String source : result.sources) {
+			if(response.sources.contains(response.graph.getVertex(source))) {
+				response.graph.addEdge(response.graph.getVertex(result.claim), response.graph.getVertex(source));
+				response.graph.getVertex(result.claim).addNeighbor(new Edge(response.graph.getVertex(result.claim), response.graph.getVertex(source)));
+				response.graph.getVertex(source).addNeighbor(new Edge(response.graph.getVertex(result.claim), response.graph.getVertex(source)));
+//				System.out.println(response.graph.getVertex(source).getNeighborCount());
+			}
+		}
+    	
+//    	for(String claim : response.graph.vertexKeys()) {
+//    		if(result.claim.equals(claim)) {
+//    			for(String src : result.sources) {
+//    				for(String source : response.graph.vertexKeys()) {
+//    					if(source.equals(src)) {
+//    						response.graph.addEdge(response.graph.getVertex(claim), response.graph.getVertex(source));
+//    						response.graph.getVertex(claim).addNeighbor(new Edge(response.graph.getVertex(claim), response.graph.getVertex(source)));
+//    						response.graph.getVertex(source).addNeighbor(new Edge(response.graph.getVertex(claim), response.graph.getVertex(source)));
+////    						System.out.println(response.graph.getVertex(source).getNeighborCount());
+//    					}
+//    				}
+//    			}
+//    		}
+//    	}
 		
     	return response;
     }
     
     public TrainingResponse removeEdge(TrainingResponse response, SearchResult result) {
-    	for(String claim : response.graph.vertexKeys()) {
-    		if(result.claim.equals(claim)) {
-    			for(String src : result.sources) {
-    				for(String source : response.graph.vertexKeys()) {
-    					if(source.equals(src)) {
-    						response.graph.removeEdge(new Edge(response.graph.getVertex(claim), response.graph.getVertex(source)));
-    					}
-    				}
+//    	for(String claim : response.graph.vertexKeys()) {
+//    		if(result.claim.equals(claim)) {
+//    			for(String src : result.sources) {
+//    				for(String source : response.graph.vertexKeys()) {
+//    					if(source.equals(src)) {
+//    						response.graph.removeEdge(new Edge(response.graph.getVertex(claim), response.graph.getVertex(source)));
+//    					}
+//    				}
+//    			}
+//    		}
+//    	}
+//    	System.out.println(response.graph.getEdges());
+    	for(String src : result.sources) {
+    		if(response.graph.containsEdge(new Edge(response.graph.getVertex(result.claim), response.graph.getVertex(src)))
+    				&& response.graph.containsVertex(new Vertex(src))){
+    			System.out.println(response.graph.getVertex(src).getNeighborCount());
+    			response.graph.removeEdge(new Edge(response.graph.getVertex(result.claim), response.graph.getVertex(src)));
+    			if(response.graph.getVertex(src).getNeighborCount() == 0) {
+    				response.sources.remove(new Vertex(src));
+    				response.graph.removeVertex(src);
     			}
     		}
     	}
 		
-    	for(String source: result.sources) {
-    		if(response.graph.getVertex(source).getNeighborCount() == 0) {
-    			if(response.sources.size() != 0) {
-    				for(int i=0; i < response.sources.size() ;i++) {
-    					if(response.sources.get(i).getLabel().equals(source))
-    						response.sources.remove(new Vertex(source));
-    				}
-    			}
-    		}
-		}
+//    	for(String source: result.sources) {
+//    		if(response.graph.getVertex(source).getNeighborCount() == 0) {
+//    			if(response.sources.size() != 0) {
+//    				for(int i=0; i < response.sources.size() ;i++) {
+//    					if(response.sources.get(i).getLabel().equals(source))
+//    						response.sources.remove(new Vertex(source));
+//    				}
+//    			}
+//    		}
+//		}
     	
 //    	System.out.println(result.sources);
-    	for(String source: result.sources) {
+//    	for(String source: result.sources) {
 //    		System.out.println(source);
-    		if(response.graph.containsVertex(new Vertex(source))) {
-    			if(response.graph.getVertex(source).getNeighborCount() == 0)
-    				response.graph.removeVertex(source);
-    		}
-    			
-    	}
+//    		if(response.graph.containsVertex(new Vertex(source))) {
+//    			if(response.graph.getVertex(source).getNeighborCount() == 0)
+//    				response.graph.removeVertex(source);
+//    		}
+//    			
+//    	}
     		
-    	if(response.graph.getVertex(new Vertex(result.claim).getLabel()).getNeighborCount() == 0) {
+    	if(response.graph.getVertex(result.claim).getNeighborCount() == 0) {
     		response.claims.remove(new Vertex(result.claim));
-        	
         	response.graph.removeVertex(new Vertex(result.claim).getLabel());
     	}
     	

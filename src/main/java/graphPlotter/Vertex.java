@@ -35,8 +35,9 @@ public class Vertex {
         if(this.edgeLink.contains(edge)){
             return;
         }
-        
+//        System.out.println(this.edgeLink);
         this.edgeLink.add(edge);
+//        System.out.println(this.edgeLink);
     }
     
     
@@ -82,6 +83,7 @@ public class Vertex {
      * @return int The number of neighbors of this Vertex
      */
     public int getNeighborCount(){
+    	System.out.println(this.edgeLink);
         return this.edgeLink.size();
     }
     

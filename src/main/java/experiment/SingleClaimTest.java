@@ -46,14 +46,14 @@ public class SingleClaimTest {
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
 		String testTriples = "./src/main/resources/data/testtriples.tsv";
-		String resultFile = "./src/main/resources/newExperiments/SingleTF.nt";
+		String resultFile = "./src/main/resources/newExperiments/SingleSum.nt";
 		BufferedReader reader = new BufferedReader(new FileReader(testTriples));
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
 		Charset charset = StandardCharsets.UTF_8;
 		Map<String, String>  singleResults = new HashMap<String, String>();
 		
-		
+		System.out.println("Running Single Claim Test");
 		/**
 		 * Training the graph with true claims and initializing the belief score to be 1.0
 		 */
@@ -84,8 +84,8 @@ public class SingleClaimTest {
 			
 //			inv.trustScore(response.graph, response.sources);
 			for(int i = 0; i < 20; i++) {
-				tf.trustScore(response.graph, response.sources);
-		        tf.beliefScore(response.graph, response.claims);
+				sums.trustScore(response.graph, response.sources);
+		        sums.beliefScore(response.graph, response.claims);
 		       }
 			
 			String part[] = dataRow.split("\\t");
@@ -102,7 +102,7 @@ public class SingleClaimTest {
 			String content = new String(Files.readAllBytes(path), charset);
 			content = content.replace(claim, "\""+singleResults.get(claim)+"\"");
 			Files.write(path, content.getBytes(charset));
-//			System.out.println(response.graph.getVertex(result.claim).getLabel() +" : "+ response.graph.getVertex(result.claim).getScore());
+			System.out.println(claim +" : "+ singleResults.get(claim));
 		}
 		
 		System.out.println("--------------DONE----------------");

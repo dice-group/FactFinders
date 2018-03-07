@@ -1,5 +1,7 @@
 package elasticSearch;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,9 +13,8 @@ import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
-import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.util.EntityUtils;
-import org.elasticsearch.client.HeapBufferedAsyncResponseConsumer;
+import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -33,6 +34,22 @@ public class SearchBOAPatterns{
 
 	private static String ELASTIC_SERVER = "131.234.28.255";
 	private static String ELASTIC_PORT = "6060";
+	private static RestClient restClientobj;
+	private static HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory;
+	
+	public SearchBOAPatterns(){
+		 restClientobj = RestClient.builder(new HttpHost(ELASTIC_SERVER , Integer.parseInt(ELASTIC_PORT), "http"))
+				 .setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
+            public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+                return requestConfigBuilder.setConnectTimeout(5000)
+                        .setSocketTimeout(600000);
+            }
+        }).setMaxRetryTimeoutMillis(600000)
+				.build();
+		
+		 consumerFactory =
+		        new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(1024 * 1024 * 1024);
+	}
 
 	public SearchResult query(String claim) {
 
@@ -53,14 +70,7 @@ public class SearchBOAPatterns{
 //				System.out.println( triple.getPredicate() + "(" + triple.getSubject() + "," +  triple.getObject() + ")");
 //				System.out.println("...");
 //			}
-//			
-			RestClient restClientobj = RestClient.builder(new HttpHost(ELASTIC_SERVER , Integer.parseInt(ELASTIC_PORT), "http")).setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
-	            public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
-	                return requestConfigBuilder.setConnectTimeout(5000)
-	                        .setSocketTimeout(600000);
-	            }
-	        }).setMaxRetryTimeoutMillis(600000)
-					.build();
+			
 			String[] parts      = claim.split("\\t");
 		       String subject   = parts[0];
 		       String property  = parts[1];
@@ -104,8 +114,8 @@ public class SearchBOAPatterns{
 //////								"} \n"+
 								"}", ContentType.APPLICATION_JSON);
 								
-				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1); //, new HeapBufferedAsyncResponseConsumer(1024 * 1024 * 1024));
-				String json = EntityUtils.toString(response.getEntity());			
+				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+				String json = EntityUtils.toString(response.getEntity()).trim();			
 				//System.out.println(json);
 				ObjectMapper mapper = new ObjectMapper();
 				@SuppressWarnings("unchecked")
@@ -113,21 +123,30 @@ public class SearchBOAPatterns{
 				JsonNode hits = rootNode.get("hits");
 				JsonNode hitCount = hits.get("total");
 				int docCount = Integer.parseInt(hitCount.asText());
-				for(int i=0; i<docCount; i++)
-				{
-					JsonNode articleNode = hits.get("hits").get(i).get("_source").get("Article");
-					JsonNode articleURLNode = hits.get("hits").get(i).get("_source").get("URL");
-					JsonNode articleTitleNode = hits.get("hits").get(i).get("_source").get("Title");
-					JsonNode articleID = hits.get("hits").get(i).get("_id");
-					String articleText = articleNode.asText();
-					String articleId = articleID.asText();
-					String articleURL = getDomainName(articleURLNode.asText());
-					String articleTitle = articleTitleNode.asText();
-					//System.out.println(articleURL);
-					//System.out.println(articleURL);
-					//System.out.println(articleId);
-					
-					pageTitles.add(articleURL);
+				if (docCount != 0) {
+					if(docCount > 10000) {
+						docCount = 10000;
+					}
+					for(int i=0; i<docCount; i++)
+					{
+//						System.out.println(i);
+//						JsonNode articleNode = hits.get("hits").get(i).get("_source").get("Article");
+						JsonNode articleURLNode = hits.get("hits").get(i).get("_source").get("URL");
+//						JsonNode articleTitleNode = hits.get("hits").get(i).get("_source").get("Title");
+//						JsonNode articleID = hits.get("hits").get(i).get("_id");
+//						String articleText = articleNode.asText();
+//						String articleId = articleID.asText();
+						String articleURL = getDomainName(articleURLNode.asText());
+//						String articleTitle = articleTitleNode.asText();
+						//System.out.println(articleURL);
+						//System.out.println(articleURL);
+						//System.out.println(articleId);
+						
+						if (checkDuplicates(articleURL, pageTitles)) {
+							pageTitles.add(articleURL);
+							pageTitles.trimToSize();
+						}
+					}
 				}
 
 				searchResult.claim = claim.replace("\t", "_");
@@ -137,7 +156,7 @@ public class SearchBOAPatterns{
 			}
 			else {
 				for(String predicate : propertyWords) {
-					String q1 = String.format("\"%s %s %s\"", subject, predicate, object);
+					String q1 = String.format("\"%s %s %s\"", subject, predicate.trim(), object);
 					if ( predicate.equals("??? NONE ???") )
 						q1 = String.format("\"%s %s\"", subject, object);
 //					System.out.println(q1);
@@ -171,31 +190,55 @@ public class SearchBOAPatterns{
 //////									"} \n"+
 									"}", ContentType.APPLICATION_JSON);
 									
-					Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1); //, new HeapBufferedAsyncResponseConsumer(1024 * 1024 * 1024));
-					String json = EntityUtils.toString(response.getEntity());			
-					//System.out.println(json);
+					Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+//					if(response.getEntity().getContentLength() > 100000) {
+//						System.out.println(response.getEntity().getContent());
+//					}
+					BufferedReader in = new BufferedReader(
+					        new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
+//					StringBuilder json = new StringBuilder();
+//					String line;
+//					try {
+//						while ((line = in.readLine()) != null) {
+//							json.append(line);
+//						}
+//
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//					in.close();
+//					String json = EntityUtils.toString(response.getEntity()).trim();			
 					ObjectMapper mapper = new ObjectMapper();
-					@SuppressWarnings("unchecked")
-					JsonNode rootNode = mapper.readValue(json, JsonNode.class);
+					JsonNode rootNode = mapper.readValue(in, JsonNode.class);
+					in.close();
 					JsonNode hits = rootNode.get("hits");
 					JsonNode hitCount = hits.get("total");
 					int docCount = Integer.parseInt(hitCount.asText());
-					for(int i=0; i<docCount; i++)
-					{
-						JsonNode articleNode = hits.get("hits").get(i).get("_source").get("Article");
-						JsonNode articleURLNode = hits.get("hits").get(i).get("_source").get("URL");
-						JsonNode articleTitleNode = hits.get("hits").get(i).get("_source").get("Title");
-						JsonNode articleID = hits.get("hits").get(i).get("_id");
-						String articleText = articleNode.asText();
-						String articleId = articleID.asText();
-						String articleURL = getDomainName(articleURLNode.asText());
-						String articleTitle = articleTitleNode.asText();
-						//System.out.println(articleURL);
-						//System.out.println(articleURL);
-						//System.out.println(articleId);
-						
-						pageTitles.add(articleURL);
+					if (docCount != 0) {
+						if(docCount > 10000) {
+							docCount = 10000;
+						}
+						for (int i = 0; i < docCount; i++) {
+//							System.out.println(i);
+//							JsonNode articleNode = hits.get("hits").get(i).get("_source").get("Article");
+							JsonNode articleURLNode = hits.get("hits").get(i).get("_source").get("URL");
+//							JsonNode articleTitleNode = hits.get("hits").get(i).get("_source").get("Title");
+//							JsonNode articleID = hits.get("hits").get(i).get("_id");
+//							String articleText = articleNode.asText();
+//							String articleId = articleID.asText();
+							String articleURL = getDomainName(articleURLNode.asText());
+//							String articleTitle = articleTitleNode.asText();
+							//System.out.println(articleURL);
+							//System.out.println(articleURL);
+							//System.out.println(articleId);
+
+							if (checkDuplicates(articleURL, pageTitles)) {
+								pageTitles.add(articleURL);
+								pageTitles.trimToSize();
+							}
+						} 
 					}
+					System.out.println(pageTitles.size());
 				}
 				
 				searchResult.claim = claim.replace("\t", "_");
@@ -226,6 +269,17 @@ public class SearchBOAPatterns{
 	        host = host.substring("www".length()+1);
 	    }
 	    return host;
+	}
+	
+	public static boolean checkDuplicates(String url, ArrayList<String> list) {
+	
+		for(String listUrl : list) {
+			if(listUrl.equals(url)) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
 

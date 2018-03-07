@@ -13,6 +13,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.HeapBufferedAsyncResponseConsumer;
+import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
@@ -62,6 +63,10 @@ public class SearchWordnetPatterns{
 	            }
 	        }).setMaxRetryTimeoutMillis(600000)
 					.build();
+			
+			HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory =
+			        new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(1024 * 1024 * 1024);
+			
 		       String[] parts      = claim.split("\\t");
 		       String subject   = parts[0];
 		       String property  = parts[1];
@@ -105,7 +110,7 @@ public class SearchWordnetPatterns{
 //////								"} \n"+
 								"}", ContentType.APPLICATION_JSON);
 								
-				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, new HeapBufferedAsyncResponseConsumer(1024 * 1024 * 1024));
+				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
 				String json = EntityUtils.toString(response.getEntity());			
 				//System.out.println(json);
 				ObjectMapper mapper = new ObjectMapper();
@@ -172,7 +177,7 @@ public class SearchWordnetPatterns{
 //////									"} \n"+
 									"}", ContentType.APPLICATION_JSON);
 									
-					Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, new HeapBufferedAsyncResponseConsumer(1024 * 1024 * 1024));
+					Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
 					String json = EntityUtils.toString(response.getEntity());			
 					//System.out.println(json);
 					ObjectMapper mapper = new ObjectMapper();
