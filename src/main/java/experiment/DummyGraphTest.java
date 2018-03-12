@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import demo.CreateGraph;
 import elasticSearch.SearchResult;
 import factFinders.AverageLog;
 import factFinders.InitializeBeliefs;
@@ -15,7 +14,9 @@ import factFinders.Investment;
 import factFinders.PooledInvestment;
 import factFinders.Sums;
 import factFinders.Truthfinder;
-import graphPlotter.Vertex;
+import graphConstruct.Vertex;
+import graphPlotter.CreateGraph;
+import trainingGraph.TrainingResponse;
 
 /**
  * Minimal graph experiment just as Proof of concept for algorithms
@@ -41,7 +42,7 @@ public class DummyGraphTest {
 //		String domain = getDomainName("https://en.wikipedia.org/wiki/Albert_Einstein");
 		
 		/**
-		 * Training
+		 * TrainingWithSearch
 		 */
 		claim = "c1";
 		sources.add("s1");
@@ -75,7 +76,7 @@ public class DummyGraphTest {
 		response.graph = beliefs.initialize(response.graph, response.claims, "training");
 		
 		/**
-		 * Testing
+		 * BulkClaimTest
 		 */
 		
 		result.claim = "c4";

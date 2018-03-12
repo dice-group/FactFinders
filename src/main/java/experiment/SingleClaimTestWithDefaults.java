@@ -8,12 +8,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
-import elasticSearch.SearchWordnetPatterns;
 import factFinders.AverageLog;
 import factFinders.InitializeBeliefs;
 import factFinders.Investment;
@@ -21,21 +22,15 @@ import factFinders.PooledInvestment;
 import factFinders.Sums;
 import factFinders.Truthfinder;
 import graphPlotter.CreateGraph;
-import trainingGraph.TrainingWithSearch;
 import trainingGraph.TrainingResponse;
+import trainingGraph.TrainingWithDefaults;
 
-/**
- * Algorithms are tested for each test claim with training claims 
- * Results are logged into the sample variant of algorithm
- * @author Hussain
- *
- */
-public class SingleClaimTest {
-	
+public class SingleClaimTestWithDefaults {
+
 	public static void main(String[] args) throws IOException {
 		SearchResult result = new SearchResult();
 		TrainingResponse response = new TrainingResponse();
-		TrainingWithSearch trainingData = new TrainingWithSearch();
+		TrainingWithDefaults trainingData = new TrainingWithDefaults();
 //		SearchWordnetPatterns search = new SearchWordnetPatterns();
 		SearchBOAPatterns search = new SearchBOAPatterns();
 		CreateGraph newEdge = new CreateGraph();
@@ -45,7 +40,7 @@ public class SingleClaimTest {
 		Truthfinder tf = new Truthfinder();
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
-		String testTriples = "./src/main/resources/data/testtriples.tsv";
+		String testTriples = "./src/main/resources/data/testinggraph_BOA_CW.tsv";
 		String resultFile = "./src/main/resources/newExperiments/SingleAvg.nt";
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
@@ -64,14 +59,16 @@ public class SingleClaimTest {
 		
 		String dataRow = TSVFile.readLine();
 		while (dataRow != null){
-			System.out.println(dataRow);
-			result = search.query(dataRow);
+//			System.out.println(dataRow);
+			String[] dataArray = dataRow.split("\\t");
+			dataArray[1] = dataArray[1].replace("[", "").replace("]", "");
 //			if(result == null) {
 //				System.out.println(" result null : " + dataRow);
 //				dataRow = TSVFile.readLine();
 //				continue;
 //			}
-			
+			result.claim = dataArray[0];
+			result.sources = new ArrayList<String>(Arrays.asList(dataArray[1].split(",")));
 			response = newEdge.addEdge(response, result);
 			response.graph = beliefs.initialize(response.graph, result.claim, "testing");
 			
@@ -90,6 +87,7 @@ public class SingleClaimTest {
 			
 			singleResults.put(result.claim, Double.toString(response.graph.getVertex(result.claim).getScore()));
 			
+//			System.out.println(result.claim);
 			response = newEdge.removeEdge(response, result);
 			response.graph = beliefs.initialize(response.graph, response.claims, "training");
 			
@@ -106,4 +104,5 @@ public class SingleClaimTest {
 		
 		System.out.println("--------------DONE----------------");
 	}
+
 }

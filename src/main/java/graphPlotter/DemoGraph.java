@@ -1,4 +1,4 @@
-package demo;
+package graphPlotter;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import elasticSearch.RDFTriplizer;
 import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
 import elasticSearch.SearchWordnetPatterns;
@@ -18,8 +17,9 @@ import factFinders.Investment;
 import factFinders.PooledInvestment;
 import factFinders.Sums;
 import factFinders.Truthfinder;
-import graphPlotter.Graph;
-import graphPlotter.Vertex;
+import graphConstruct.Graph;
+import graphConstruct.Vertex;
+import triplizers.RDFTriplizer;
 
 /**
 *

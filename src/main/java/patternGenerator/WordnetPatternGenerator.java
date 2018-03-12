@@ -1,4 +1,4 @@
-package elasticSearch;
+package patternGenerator;
 
 import java.io.File;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import edu.smu.tspell.wordnet.WordNetDatabase;
 public class WordnetPatternGenerator {
 	
 //	public static void main(String[] args){
-//        String wordForm = "starring";
+//        String wordForm = "award";
 //        //  Get the synsets containing the word form=capicity
 //
 //       File f=new File("./dict");

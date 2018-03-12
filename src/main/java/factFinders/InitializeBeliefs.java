@@ -2,8 +2,8 @@ package factFinders;
 
 import java.util.ArrayList;
 
-import graphPlotter.Graph;
-import graphPlotter.Vertex;
+import graphConstruct.Graph;
+import graphConstruct.Vertex;
 
 /**
  * 
@@ -21,34 +21,35 @@ public class InitializeBeliefs {
 	public Graph initialize(Graph graph, ArrayList<Vertex> claims, String factfinder) {	
 		if(factfinder == "Sums") {
 			for(int i = 0; i < claims.size(); i++) {
-			 	   graph.getVertex(claims.get(i).getLabel()).setScore(fixedBelief); 
-			 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
+			   graph.getVertex(claims.get(i).getLabel()).setScore(fixedBelief); 
+			   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
 			}
 		}
 		else if(factfinder == "Avg") {
 			for(int i = 0; i < claims.size(); i++) {
-			 	   graph.getVertex(claims.get(i).getLabel()).setScore(fixedBelief); 
-			 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-			}
+		 	   graph.getVertex(claims.get(i).getLabel()).setScore(fixedBelief); 
+		 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
+		}
 		}
 		else if(factfinder == "training") {
 			for(int i = 0; i < claims.size(); i++) {
-			 	   graph.getVertex(claims.get(i).getLabel()).setScore(trainBelief); 
-//			 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
+//				System.out.println( graph.getVertex(claims.get(i).getLabel()).getLabel());
+			 	graph.getVertex(claims.get(i).getLabel()).setScore(trainBelief);  
+//			 	System.out.println( graph.getVertex(claims.get(i).getLabel()).getLabel() +" : "+ graph.getVertex(claims.get(i).getLabel()).getScore());
 			}
 		}
 		else if(factfinder == "Pool") {
 			uniformBelief = 1/2;
 			for(int i = 0; i < claims.size(); i++) {
-			 	   graph.getVertex(claims.get(i).getLabel()).setScore(uniformBelief); 
-			 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
+				graph.getVertex(claims.get(i).getLabel()).setScore(uniformBelief); 
+				System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
 			}
 		}
 		else if(factfinder == "Tf") {
 			uniformBelief = 1/2;
 			for(int i = 0; i < claims.size(); i++) {
-			 	   graph.getVertex(claims.get(i).getLabel()).setScore(uniformBelief); 
-			 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
+			 	 graph.getVertex(claims.get(i).getLabel()).setScore(uniformBelief); 
+			 	 System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
 			}
 		}
 		else {

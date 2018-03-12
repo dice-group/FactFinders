@@ -1,4 +1,4 @@
-package elasticSearch;
+package triplizers;
 
 import java.io.FileWriter;
 import java.io.IOException;

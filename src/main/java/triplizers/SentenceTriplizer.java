@@ -1,6 +1,4 @@
-package elasticSearch;
-
-import elasticSearch.SentenceTriple;
+package triplizers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +14,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.trees.TreeCoreAnnotations.TreeAnnotation;
 import edu.stanford.nlp.util.CoreMap;
+import triplizers.SentenceTriple;
 
 /**
  * 

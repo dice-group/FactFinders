@@ -1,4 +1,4 @@
-package graphPlotter;
+package graphConstruct;
 
 import java.util.ArrayList;
 
@@ -83,7 +83,7 @@ public class Vertex {
      * @return int The number of neighbors of this Vertex
      */
     public int getNeighborCount(){
-    	System.out.println(this.edgeLink);
+//    	System.out.println(this.edgeLink);
         return this.edgeLink.size();
     }
     

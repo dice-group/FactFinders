@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import demo.CreateGraph;
 import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
 import elasticSearch.SearchWordnetPatterns;
@@ -20,22 +19,25 @@ import factFinders.Investment;
 import factFinders.PooledInvestment;
 import factFinders.Sums;
 import factFinders.Truthfinder;
-import graphPlotter.Vertex;
+import graphConstruct.Vertex;
+import graphPlotter.CreateGraph;
+import trainingGraph.TrainingWithSearch;
+import trainingGraph.TrainingResponse;
 
 /**
- * Testing for each algorithm
+ * BulkClaimTest for each algorithm
  * The test and train triples are created using RDF triplizer(Search)
  * Results are logged into the sample variant of algorithm
  * @author Hussain
  *
  */
-public class Testing {
+public class BulkClaimTest {
 	
 	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 		SearchResult result = new SearchResult();
 		TrainingResponse response = new TrainingResponse();
-		Training trainingData = new Training();
+		TrainingWithSearch trainingData = new TrainingWithSearch();
 //		SearchWordnetPatterns search = new SearchWordnetPatterns();
 		SearchBOAPatterns search = new SearchBOAPatterns();
 		CreateGraph newEdge = new CreateGraph();
@@ -54,7 +56,7 @@ public class Testing {
 		
 		
 		/**
-		 * Training the graph with true claims and initializing the belief score to be 1.0
+		 * TrainingWithSearch the graph with true claims and initializing the belief score to be 1.0
 		 */
 		response = trainingData.train();
 		

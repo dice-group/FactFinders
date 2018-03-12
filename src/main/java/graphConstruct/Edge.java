@@ -1,4 +1,4 @@
-package graphPlotter;
+package graphConstruct;
 
 /**
  * This class models an undirected Edge in the Graph implementation.

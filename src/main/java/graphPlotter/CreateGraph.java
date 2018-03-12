@@ -1,13 +1,13 @@
-package demo;
+package graphPlotter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import elasticSearch.SearchResult;
-import experiment.TrainingResponse;
-import graphPlotter.Edge;
-import graphPlotter.Graph;
-import graphPlotter.Vertex;
+import graphConstruct.Edge;
+import graphConstruct.Graph;
+import graphConstruct.Vertex;
+import trainingGraph.TrainingResponse;
 
 /**
  * 
@@ -124,9 +124,10 @@ public class CreateGraph {
     
     public TrainingResponse addEdge(TrainingResponse response, SearchResult result) {
 //    	System.out.println(result.claim);
-    	response.claims.add(new Vertex(result.claim));
-    	
-    	response.graph.addVertex(new Vertex(result.claim), false);
+    	if(!response.claims.contains(new Vertex(result.claim)))
+    		response.claims.add(new Vertex(result.claim));
+    	if(!response.graph.containsVertex(new Vertex(result.claim)))
+    		response.graph.addVertex(new Vertex(result.claim), false);
 		
 //    	System.out.println(result.sources);
     	for(String source: result.sources) {
@@ -195,7 +196,7 @@ public class CreateGraph {
     	for(String src : result.sources) {
     		if(response.graph.containsEdge(new Edge(response.graph.getVertex(result.claim), response.graph.getVertex(src)))
     				&& response.graph.containsVertex(new Vertex(src))){
-    			System.out.println(response.graph.getVertex(src).getNeighborCount());
+//    			System.out.println(response.graph.getVertex(src).getNeighborCount());
     			response.graph.removeEdge(new Edge(response.graph.getVertex(result.claim), response.graph.getVertex(src)));
     			if(response.graph.getVertex(src).getNeighborCount() == 0) {
     				response.sources.remove(new Vertex(src));

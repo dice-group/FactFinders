@@ -1,12 +1,14 @@
 package elasticSearch;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -22,19 +24,25 @@ import org.elasticsearch.client.RestClientBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import patternGenerator.BOAPatternGenerator;
+
 
 
 /**
- * Class ElasticSearchEngine maps sources generated against each claim
+ * This class searches for the sources for each claim. 
+ * The Elastic search rest client is realized for the purpose of searching
+ * For each claim several several queries are generated using BOA patterns.
+ * The result of all the queries is returned in the form of a singleton list containing the sources URL  
  *
  * @author Hussain
  */
 
 public class SearchBOAPatterns{
 
-	private static String ELASTIC_SERVER = "131.234.28.255";
+	private static String ELASTIC_SERVER = "131.234.29.15";
 	private static String ELASTIC_PORT = "6060";
 	private static RestClient restClientobj;
+	private static Response response;
 	private static HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory;
 	
 	public SearchBOAPatterns(){
@@ -113,8 +121,9 @@ public class SearchBOAPatterns{
 //////								"} \n"+
 //////								"} \n"+
 								"}", ContentType.APPLICATION_JSON);
-								
-				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+				long start = System.nanoTime();			
+				response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+				System.out.print("Search on server took " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) + " seconds \n");
 				String json = EntityUtils.toString(response.getEntity()).trim();			
 				//System.out.println(json);
 				ObjectMapper mapper = new ObjectMapper();
@@ -189,8 +198,9 @@ public class SearchBOAPatterns{
 //////									"} \n"+
 //////									"} \n"+
 									"}", ContentType.APPLICATION_JSON);
-									
+					long start = System.nanoTime();					
 					Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+					System.out.print("Search on server took " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) + " seconds \n");
 //					if(response.getEntity().getContentLength() > 100000) {
 //						System.out.println(response.getEntity().getContent());
 //					}
@@ -238,7 +248,7 @@ public class SearchBOAPatterns{
 							}
 						} 
 					}
-					System.out.println(pageTitles.size());
+//					System.out.println(pageTitles.size());
 				}
 				
 				searchResult.claim = claim.replace("\t", "_");

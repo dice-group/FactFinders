@@ -8,14 +8,14 @@ import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Test;
 
-import demo.CreateGraph;
 import elasticSearch.SearchResult;
-import experiment.TrainingResponse;
 import factFinders.AverageLog;
 import factFinders.InitializeBeliefs;
 import factFinders.Investment;
 import factFinders.Sums;
 import factFinders.Truthfinder;
+import graphPlotter.CreateGraph;
+import trainingGraph.TrainingResponse;
 
 public class AllAlgosTests {
 
@@ -34,7 +34,7 @@ public class AllAlgosTests {
 	@Before
 	public void plotDummyGraph(){
 		/**
-		 * Training
+		 * TrainingWithSearch
 		 */
 		claim = "c1";
 		sources.add("s1");
@@ -49,7 +49,7 @@ public class AllAlgosTests {
 		response.graph = beliefs.initialize(response.graph, response.claims, "training");
 		
 		/**
-		 * Testing
+		 * BulkClaimTest
 		 */
 		result.claim = "c2";
 		result.sources.add("s1");

@@ -1,9 +1,9 @@
-package experiment;
+package trainingGraph;
 
 import java.util.ArrayList;
 
-import graphPlotter.Graph;
-import graphPlotter.Vertex;
+import graphConstruct.Graph;
+import graphConstruct.Vertex;
 
 /**
  * 

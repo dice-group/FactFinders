@@ -1,6 +1,7 @@
-package demo;
+package preprocessing;
 
 import java.io.BufferedReader;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -9,8 +10,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import elasticSearch.SentenceTriple;
-import elasticSearch.SentenceTriplizer;
+import triplizers.SentenceTriple;
+import triplizers.SentenceTriplizer;
 
 /**
  * In case of sentence triplization, some pre-processing is required.
@@ -18,14 +19,15 @@ import elasticSearch.SentenceTriplizer;
  * @author Hussain
  */
 
-public class PreProcessing {
-	  public static void main(String[] arg) throws Exception {
-		  ArrayList<String> facts = new ArrayList<String>();
-		  facts = extraction();
-		  triplization(facts);
-       
-	    }
-	  
+public class GenerateSentenceTriples {
+
+	public static void main(String[] args) throws IOException {
+		ArrayList<String> facts = new ArrayList<String>();
+		facts = extraction();
+		triplization(facts);
+
+	}
+	
 	  public static ArrayList<String> extraction() throws IOException {
 		BufferedReader TSVFile;
 		TSVFile = new BufferedReader(new FileReader("./src/main/resources/data/true_claims.tsv"));
@@ -76,4 +78,5 @@ public class PreProcessing {
 		  writer.flush();
 		  writer.close();
 	  }
+
 }

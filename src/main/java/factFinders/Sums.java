@@ -2,9 +2,9 @@ package factFinders;
 
 import java.util.ArrayList;
 
-import graphPlotter.Edge;
-import graphPlotter.Graph;
-import graphPlotter.Vertex;
+import graphConstruct.Edge;
+import graphConstruct.Graph;
+import graphConstruct.Vertex;
 
 public class Sums implements Scores {
 

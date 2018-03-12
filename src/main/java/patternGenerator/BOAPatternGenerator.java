@@ -1,4 +1,4 @@
-package elasticSearch;
+package patternGenerator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,6 +10,11 @@ import org.aksw.defacto.Defacto;
 import org.aksw.defacto.boa.BoaPatternSearcher;
 import org.aksw.defacto.boa.Pattern;
 
+/**
+ * Getting BOA patterns of a predicate word
+ * @author Hussain
+ *
+ */
 
 public class BOAPatternGenerator {
 	
@@ -22,7 +27,7 @@ public class BOAPatternGenerator {
 ////        System.out.println("--------------");
 ////        queryPatterns("http://dbpedia.org/ontology/deathPlace");
 ////        System.out.println("--------------");
-//        queryPatterns("http://dbpedia.org/ontology/foundationPlace");
+//        queryPatterns("http://dbpedia.org/ontology/married");
 //        System.out.println("--------------");
 ////        queryPatterns("http://dbpedia.org/ontology/leaderName");
 //        System.out.println("--------------");
@@ -50,7 +55,7 @@ public class BOAPatternGenerator {
 //        sub.addAll(bps.getNaturalLanguageRepresentations(uri, nr, "de"));
 //        sub.addAll(bps.getNaturalLanguageRepresentations(uri, nr,  "fr"));
         
-        System.out.println(uri);
+//        System.out.println(uri);
         Iterator<Pattern> iterator = sub.iterator();
         while ( iterator.hasNext()) {
 			Pattern pattern = iterator.next();

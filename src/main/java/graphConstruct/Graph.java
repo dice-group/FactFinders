@@ -1,4 +1,4 @@
-package graphPlotter;
+package graphConstruct;
 
 import java.util.*;
 

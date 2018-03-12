@@ -12,7 +12,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
 import org.apache.http.util.EntityUtils;
-import org.elasticsearch.client.HeapBufferedAsyncResponseConsumer;
 import org.elasticsearch.client.HttpAsyncResponseConsumerFactory;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
@@ -21,12 +20,16 @@ import org.elasticsearch.client.RestClientBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import patternGenerator.WordnetPatternGenerator;
+
 
 
 /**
- * Class ElasticSearchEngine maps sources generated against each claim
+ * This class searches for the sources for each claim. 
+ * The Elastic search rest client is realized for the purpose of searching
+ * For each claim several several queries are generated using Word net patterns.
+ * The result of all the queries is returned in the form of a singleton list containing the sources URL  
  *
- * 
  * @author Hussain
  */
 
@@ -34,6 +37,23 @@ public class SearchWordnetPatterns{
 
 	private static String ELASTIC_SERVER = "131.234.28.255";
 	private static String ELASTIC_PORT = "6060";
+	private static RestClient restClientobj;
+	private static Response response;
+	private static HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory;
+	
+	public SearchWordnetPatterns(){
+		 restClientobj = RestClient.builder(new HttpHost(ELASTIC_SERVER , Integer.parseInt(ELASTIC_PORT), "http"))
+				 .setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
+           public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+               return requestConfigBuilder.setConnectTimeout(5000)
+                       .setSocketTimeout(600000);
+           }
+       }).setMaxRetryTimeoutMillis(600000)
+				.build();
+		
+		 consumerFactory =
+		        new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(1024 * 1024 * 1024);
+	}
 
 	public SearchResult query(String claim) {
 
@@ -55,17 +75,7 @@ public class SearchWordnetPatterns{
 //				System.out.println( triple.getPredicate() + "(" + triple.getSubject() + "," +  triple.getObject() + ")");
 //				System.out.println("...");
 //			}
-//			
-			RestClient restClientobj = RestClient.builder(new HttpHost(ELASTIC_SERVER , Integer.parseInt(ELASTIC_PORT), "http")).setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
-	            public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
-	                return requestConfigBuilder.setConnectTimeout(5000)
-	                        .setSocketTimeout(600000);
-	            }
-	        }).setMaxRetryTimeoutMillis(600000)
-					.build();
-			
-			HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory =
-			        new HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory(1024 * 1024 * 1024);
+
 			
 		       String[] parts      = claim.split("\\t");
 		       String subject   = parts[0];
@@ -110,7 +120,7 @@ public class SearchWordnetPatterns{
 //////								"} \n"+
 								"}", ContentType.APPLICATION_JSON);
 								
-				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+				response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
 				String json = EntityUtils.toString(response.getEntity());			
 				//System.out.println(json);
 				ObjectMapper mapper = new ObjectMapper();
