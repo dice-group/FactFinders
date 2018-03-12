@@ -1,4 +1,4 @@
-package factFinders;
+package factfinders;
 
 import java.util.ArrayList;
 
@@ -15,6 +15,8 @@ public class PooledInvestment implements Scores {
 	 * (Originally by Pasternack) sources "invest" their trust uniformly in claims
 	 * belief in each claim grows according to a linear function G where G=x^g, g=1.4 w.r.t mutual exclusion set
 	 * training and testing being the two mutual exclusion sets.
+	 * After a series of experiments, It is found that this algorithm does-not fit well for open-data scenario
+	 * The reason behind this exclusion is the lack of mutual exclusion sets for claims, As the claims for which the veracity have to be checked are kept discrete. 
 	 * @author Hussain
 	 */
 	@Override

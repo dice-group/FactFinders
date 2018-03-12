@@ -1,4 +1,4 @@
-package factFinders;
+package factfinders;
 
 import java.util.ArrayList;
 
@@ -10,6 +10,7 @@ public class Sums implements Scores {
 
 	private double maxScore = 0;
 	private double score = 0;
+	
 	/**
 	 * Hubs and Authorities (Kleinberg, 1999) adapted for claims and sources, 
 	 * where sources refers as hubs and claims refers to authorities.
@@ -33,7 +34,7 @@ public class Sums implements Scores {
 				score = 0;
 			}
 		}
-		maxScore = maxScore(graph, claims); 
+		maxScore = maxScoreFinder(graph, claims); 
 		normalize(graph, maxScore, claims);
 	}
 
@@ -53,11 +54,11 @@ public class Sums implements Scores {
 				score = 0;
 			}
 		}
-		maxScore = maxScore(graph, sources); 
+		maxScore = maxScoreFinder(graph, sources); 
 		normalize(graph, maxScore, sources);
 	}
 
-	private double maxScore(Graph graph, ArrayList<Vertex> vertices) {
+	private double maxScoreFinder(Graph graph, ArrayList<Vertex> vertices) {
 		double max = 0;
 		for(int i = 0; i < vertices.size(); i++) {
 			if(graph.containsVertex(vertices.get(i))) {

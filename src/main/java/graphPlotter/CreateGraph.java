@@ -2,6 +2,7 @@ package graphPlotter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 
 import elasticSearch.SearchResult;
 import graphConstruct.Edge;
@@ -58,8 +59,8 @@ public class CreateGraph {
 //        }
     }
     
-    public CreateGraph(HashMap<String, ArrayList<String>> buildGraph){
-		for(ArrayList<String> sourceList : buildGraph.values()) {
+    public CreateGraph(HashMap<String, Set<String>> buildGraph){
+		for(Set<String> sourceList : buildGraph.values()) {
 			for(String source: sourceList) {
 				if(sources.size() != 0) {
 					for(int i=0; i < sources.size() ;i++) {

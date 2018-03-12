@@ -11,16 +11,18 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
-import factFinders.AverageLog;
-import factFinders.InitializeBeliefs;
-import factFinders.Investment;
-import factFinders.PooledInvestment;
-import factFinders.Sums;
-import factFinders.Truthfinder;
+import factfinders.AverageLog;
+import factfinders.InitializeBeliefs;
+import factfinders.Investment;
+import factfinders.PooledInvestment;
+import factfinders.Sums;
+import factfinders.Truthfinder;
 import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
 import trainingGraph.TrainingWithDefaults;
@@ -41,7 +43,7 @@ public class SingleClaimTestWithDefaults {
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
 		String testTriples = "./src/main/resources/data/testinggraph_BOA_CW.tsv";
-		String resultFile = "./src/main/resources/newExperiments/SingleInv.nt";
+		String resultFile = "./src/main/resources/newExperiments/SingleTF.nt";
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
 		Charset charset = StandardCharsets.UTF_8;
@@ -68,7 +70,7 @@ public class SingleClaimTestWithDefaults {
 //				continue;
 //			}
 			result.claim = dataArray[0];
-			result.sources = new ArrayList<String>(Arrays.asList(dataArray[1].split(",")));
+			result.sources = new LinkedHashSet<String>(Arrays.asList(dataArray[1].split(",")));
 			response = newEdge.addEdge(response, result);
 			response.graph = beliefs.initialize(response.graph, result.claim, "testing");
 			
@@ -79,10 +81,10 @@ public class SingleClaimTestWithDefaults {
 			
 //			For Investmnet open the comment below
 			
-			inv.trustScore(response.graph, response.sources);
+//			inv.trustScore(response.graph, response.sources);
 			for(int i = 0; i < 20; i++) {
-				inv.trustScore(response.graph, response.sources);
-		        inv.beliefScore(response.graph, response.claims);
+				tf.trustScore(response.graph, response.sources);
+		        tf.beliefScore(response.graph, response.claims);
 		       }
 			
 			singleResults.put(result.claim, Double.toString(response.graph.getVertex(result.claim).getScore()));

@@ -8,27 +8,26 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.LinkedHashSet;
 import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
-import factFinders.AverageLog;
-import factFinders.InitializeBeliefs;
-import factFinders.Investment;
-import factFinders.PooledInvestment;
-import factFinders.Sums;
-import factFinders.Truthfinder;
+import factfinders.AverageLog;
+import factfinders.InitializeBeliefs;
+import factfinders.Investment;
+import factfinders.PooledInvestment;
+import factfinders.Sums;
+import factfinders.Truthfinder;
 import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
-import trainingGraph.TrainingWithSearch;
+import trainingGraph.TrainingWithDefaults;
 
 public class BulkClaimTestWithDefaults {
 
 	public static void main(String[] args) throws IOException {
 		SearchResult result = new SearchResult();
 		TrainingResponse response = new TrainingResponse();
-		TrainingWithSearch trainingData = new TrainingWithSearch();
+		TrainingWithDefaults trainingData = new TrainingWithDefaults();
 //		SearchWordnetPatterns search = new SearchWordnetPatterns();
 		SearchBOAPatterns search = new SearchBOAPatterns();
 		CreateGraph newEdge = new CreateGraph();
@@ -38,9 +37,9 @@ public class BulkClaimTestWithDefaults {
 		Truthfinder tf = new Truthfinder();
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
-		String testTriples = "./src/main/resources/data/testtriples.tsv";
-		String resultFile = "./src/main/resources/newExperiments/Sum.nt";
-		BufferedReader reader = new BufferedReader(new FileReader(testTriples));
+		String testTriples = "./src/main/resources/data/testinggraph_BOA_CW.tsv";
+		String resultFile = "./src/main/resources/newExperiments/Investment.nt";
+		BufferedReader reader = new BufferedReader(new FileReader("./src/main/resources/data/testtriples.tsv"));
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
 		Charset charset = StandardCharsets.UTF_8;
@@ -69,7 +68,7 @@ public class BulkClaimTestWithDefaults {
 //				continue;
 //			}
 			result.claim = dataArray[0];
-			result.sources = new ArrayList<String>(Arrays.asList(dataArray[1].split(",")));
+			result.sources = new LinkedHashSet<String>(Arrays.asList(dataArray[1].split(",")));
 			response = newEdge.addEdge(response, result);
 			response.graph = beliefs.initialize(response.graph, result.claim, "testing");	
 			dataRow = TSVFile.readLine();
@@ -84,10 +83,10 @@ public class BulkClaimTestWithDefaults {
 		
 //		For Investmnet open the comment below
 		
-//		inv.trustScore(response.graph, response.sources);
+		inv.trustScore(response.graph, response.sources);
 		for(int i = 0; i < 20; i++) {
-			sums.trustScore(response.graph, response.sources);
-	        sums.beliefScore(response.graph, response.claims);
+			tf.trustScore(response.graph, response.sources);
+	        tf.beliefScore(response.graph, response.claims);
 	       }
 		
 		dataRow = reader.readLine();
@@ -102,8 +101,8 @@ public class BulkClaimTestWithDefaults {
 			dataRow = reader.readLine();
 		}
 		
-		System.out.println("--------------DONE----------------");
 		reader.close();
+		System.out.println("--------------DONE----------------");
 
 	}
 

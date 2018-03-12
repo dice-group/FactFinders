@@ -4,24 +4,26 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import elasticSearch.SearchResult;
-import factFinders.AverageLog;
-import factFinders.InitializeBeliefs;
-import factFinders.Investment;
-import factFinders.Sums;
-import factFinders.Truthfinder;
+import factfinders.AverageLog;
+import factfinders.InitializeBeliefs;
+import factfinders.Investment;
+import factfinders.Sums;
+import factfinders.Truthfinder;
 import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
 
 public class GraphTests {
 
 	public String claim = new String();
-	public ArrayList<String> sources = new ArrayList<String>();
-	public HashMap<String, ArrayList<String>> training = new HashMap<String, ArrayList<String>>();
+	public Set<String> sources = new LinkedHashSet<String>();
+	public HashMap<String, Set<String>> training = new HashMap<String, Set<String>>();
 	public TrainingResponse response = new TrainingResponse();
 	public InitializeBeliefs beliefs = new InitializeBeliefs();
 	public CreateGraph newEdge = new CreateGraph();

@@ -1,6 +1,7 @@
 package elasticSearch;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * This class offers are simple struct of the result to returned as a result of elastic search
@@ -10,5 +11,5 @@ import java.util.ArrayList;
  */
 public class SearchResult {
 	public String claim = new String();
-	public ArrayList<String> sources = new ArrayList<String>();
+	public Set<String> sources = new LinkedHashSet<String>();
 }

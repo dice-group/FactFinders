@@ -1,12 +1,11 @@
 package elasticSearch;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -41,6 +40,7 @@ public class SearchBOAPatterns{
 
 	private static String ELASTIC_SERVER = "131.234.29.15";
 	private static String ELASTIC_PORT = "6060";
+	private static String W_W_W = "www";
 	private static RestClient restClientobj;
 	private static Response response;
 	private static HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory;
@@ -62,7 +62,7 @@ public class SearchBOAPatterns{
 	public SearchResult query(String claim) {
 
 		try {
-			ArrayList<String> pageTitles = new ArrayList<String>();
+			Set<String> pageTitles = new LinkedHashSet<String>();
 			SearchResult searchResult = new SearchResult();
 			BOAPatternGenerator boaPatternSearcher = new BOAPatternGenerator();
 			
@@ -151,9 +151,8 @@ public class SearchBOAPatterns{
 						//System.out.println(articleURL);
 						//System.out.println(articleId);
 						
-						if (checkDuplicates(articleURL, pageTitles)) {
+						if (!pageTitles.contains(articleURL)) {
 							pageTitles.add(articleURL);
-							pageTitles.trimToSize();
 						}
 					}
 				}
@@ -242,9 +241,8 @@ public class SearchBOAPatterns{
 							//System.out.println(articleURL);
 							//System.out.println(articleId);
 
-							if (checkDuplicates(articleURL, pageTitles)) {
+							if (!pageTitles.contains(articleURL)) {
 								pageTitles.add(articleURL);
-								pageTitles.trimToSize();
 							}
 						} 
 					}
@@ -275,21 +273,10 @@ public class SearchBOAPatterns{
 	    }        
 	    URL netUrl = new URL(url);
 	    String host = netUrl.getHost();
-	    if(host.startsWith("www")){
-	        host = host.substring("www".length()+1);
+	    if(host.startsWith(W_W_W)){
+	        host = host.substring(W_W_W.length()+1);
 	    }
 	    return host;
-	}
-	
-	public static boolean checkDuplicates(String url, ArrayList<String> list) {
-	
-		for(String listUrl : list) {
-			if(listUrl.equals(url)) {
-				return false;
-			}
-		}
-		
-		return true;
 	}
 }
 

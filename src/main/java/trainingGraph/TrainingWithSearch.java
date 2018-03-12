@@ -8,12 +8,13 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import elasticSearch.SearchBOAPatterns;
 import elasticSearch.SearchResult;
 import elasticSearch.SearchWordnetPatterns;
-import factFinders.InitializeBeliefs;
+import factfinders.InitializeBeliefs;
 import graphPlotter.CreateGraph;
 
 /**
@@ -24,7 +25,7 @@ import graphPlotter.CreateGraph;
 public class TrainingWithSearch {
 	public TrainingResponse train() throws IOException{
 		SearchResult result = new SearchResult();
-		HashMap<String, ArrayList<String>> graphBuilder = new HashMap<String, ArrayList<String>>();
+		HashMap<String, Set<String>> graphBuilder = new HashMap<String, Set<String>>();
 		TrainingResponse response = new TrainingResponse();
 		InitializeBeliefs beliefs = new InitializeBeliefs();
 		

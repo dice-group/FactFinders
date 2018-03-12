@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import elasticSearch.SearchResult;
-import factFinders.InitializeBeliefs;
+import factfinders.InitializeBeliefs;
 import graphPlotter.CreateGraph;
 
 
@@ -23,7 +25,7 @@ import graphPlotter.CreateGraph;
 public class TrainingWithDefaults {
 	public TrainingResponse train() throws IOException{
 		SearchResult result = new SearchResult();
-		HashMap<String, ArrayList<String>> graphBuilder = new HashMap<String, ArrayList<String>>();
+		HashMap<String, Set<String>> graphBuilder = new HashMap<String, Set<String>>();
 		TrainingResponse response = new TrainingResponse();
 		InitializeBeliefs beliefs = new InitializeBeliefs();
 		
@@ -41,7 +43,7 @@ public class TrainingWithDefaults {
 				dataArray[1] = dataArray[1].replace("[", "").replace("]", "");
 //				System.out.print("Search took " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) + " seconds \n");
 				if(result != null) {
-					graphBuilder.put(dataArray[0], new ArrayList<String>(Arrays.asList(dataArray[1].split(","))));
+					graphBuilder.put(dataArray[0], new LinkedHashSet<String>(Arrays.asList(dataArray[1].split(","))));
 //					System.out.println(dataArray[0] + " : " + ++i);
 				}
 				dataRow = TSVFile.readLine(); 

@@ -6,6 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpEntity;
@@ -33,9 +35,11 @@ public class SearchDefaults{
 
 	private static String ELASTIC_SERVER = "131.234.29.16";
 	private static String ELASTIC_PORT = "6060";
+	private static String W_W_W = "www";
 	private static RestClient restClientobj;
 	private static Response response;
 	private static HttpAsyncResponseConsumerFactory.HeapBufferedResponseConsumerFactory consumerFactory;
+	private static String[] parts;
 	
 	public SearchDefaults(){
 		 restClientobj = RestClient.builder(new HttpHost(ELASTIC_SERVER , Integer.parseInt(ELASTIC_PORT), "http"))
@@ -55,13 +59,13 @@ public class SearchDefaults{
 	public SearchResult query(String claim, ArrayList<String> propertyWords) {
 
 		try {
-			ArrayList<String> pageTitles = new ArrayList<String>();
+			Set<String> pageTitles = new LinkedHashSet<String>();
 			SearchResult searchResult = new SearchResult();
 			
-			String[] parts      = claim.split("\\t");
-		       String subject   = parts[0];
-		       String property  = parts[1];
-		       String object    = parts[2];
+			parts = claim.split("\\t");
+			String subject   = parts[0];
+			String property  = parts[1];
+			String object    = parts[2];
 			subject  = subject.replace("&", "and");
 			object   = object.replace("&", "and");
 			property = normalizePredicate(property.trim());
@@ -73,11 +77,6 @@ public class SearchDefaults{
 				}
 				else
 					q1 = String.format("\"%s %s %s\"", subject, predicate.trim(), object);
-				if ( predicate.equals("??? NONE ???") )
-					q1 = String.format("\"%s %s\"", subject, object);
-//					System.out.println(q1);
-				String q2 = String.format("\"%s\"", object);
-				String q3 = String.format("\"%s %s\"",subject,object);
 
 								HttpEntity entity1 = new NStringEntity(
 								 "{\n" +
@@ -106,25 +105,10 @@ public class SearchDefaults{
 //////									"} \n"+
 								"}", ContentType.APPLICATION_JSON);
 				long start = System.nanoTime();					
-				Response response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+				response = restClientobj.performRequest("GET", "/clueweb/articles/_search",Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
 				System.out.print("Search on server took " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) + " seconds \n");
-//					if(response.getEntity().getContentLength() > 100000) {
-//						System.out.println(response.getEntity().getContent());
-//					}
 				BufferedReader in = new BufferedReader(
-				        new InputStreamReader(response.getEntity().getContent(), "UTF-8"));
-//					StringBuilder json = new StringBuilder();
-//					String line;
-//					try {
-//						while ((line = in.readLine()) != null) {
-//							json.append(line);
-//						}
-//
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//					in.close();
-//					String json = EntityUtils.toString(response.getEntity()).trim();			
+				        new InputStreamReader(response.getEntity().getContent(), "UTF-8"));		
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode rootNode = mapper.readValue(in, JsonNode.class);
 				in.close();
@@ -136,22 +120,11 @@ public class SearchDefaults{
 						docCount = 10000;
 					}
 					for (int i = 0; i < docCount; i++) {
-//							System.out.println(i);
-//							JsonNode articleNode = hits.get("hits").get(i).get("_source").get("Article");
 						JsonNode articleURLNode = hits.get("hits").get(i).get("_source").get("URL");
-//							JsonNode articleTitleNode = hits.get("hits").get(i).get("_source").get("Title");
-//							JsonNode articleID = hits.get("hits").get(i).get("_id");
-//							String articleText = articleNode.asText();
-//							String articleId = articleID.asText();
 						String articleURL = getDomainName(articleURLNode.asText());
-//							String articleTitle = articleTitleNode.asText();
-						//System.out.println(articleURL);
-						//System.out.println(articleURL);
-						//System.out.println(articleId);
 
-						if (checkDuplicates(articleURL, pageTitles)) {
+						if (!pageTitles.contains(articleURL)) {
 							pageTitles.add(articleURL);
-							pageTitles.trimToSize();
 						}
 					} 
 				}
@@ -170,31 +143,20 @@ public class SearchDefaults{
 		}
 	}
 	
-	public String normalizePredicate(String propertyLabel) {
+	private String normalizePredicate(String propertyLabel) {
 		//System.out.println(propertyLabel);
 		return propertyLabel.replaceAll(",", "").replace("`", "").replace(" 's", "'s").replace("?R?", "").replace("?D?", "").replaceAll(" +", " ").replaceAll("'[^s]", "").replaceAll("&", "and").trim();
 	}
 	
-	public static String getDomainName(String url) throws MalformedURLException{
+	private static String getDomainName(String url) throws MalformedURLException{
 	    if(!url.startsWith("http") && !url.startsWith("https")){
 	         url = "http://" + url;
 	    }        
 	    URL netUrl = new URL(url);
 	    String host = netUrl.getHost();
-	    if(host.startsWith("www")){
-	        host = host.substring("www".length()+1);
+	    if(host.startsWith(W_W_W)){
+	        host = host.substring(W_W_W.length()+1);
 	    }
 	    return host;
-	}
-	
-	public static boolean checkDuplicates(String url, ArrayList<String> list) {
-	
-		for(String listUrl : list) {
-			if(listUrl.equals(url)) {
-				return false;
-			}
-		}
-		
-		return true;
 	}
 }

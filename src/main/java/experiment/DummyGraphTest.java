@@ -6,14 +6,16 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import elasticSearch.SearchResult;
-import factFinders.AverageLog;
-import factFinders.InitializeBeliefs;
-import factFinders.Investment;
-import factFinders.PooledInvestment;
-import factFinders.Sums;
-import factFinders.Truthfinder;
+import factfinders.AverageLog;
+import factfinders.InitializeBeliefs;
+import factfinders.Investment;
+import factfinders.PooledInvestment;
+import factfinders.Sums;
+import factfinders.Truthfinder;
 import graphConstruct.Vertex;
 import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
@@ -26,8 +28,8 @@ import trainingGraph.TrainingResponse;
 public class DummyGraphTest {
 	public static void main(String[] args) throws IOException {
 		String claim = new String();
-		ArrayList<String> sources = new ArrayList<String>();
-		HashMap<String, ArrayList<String>> training = new HashMap<String, ArrayList<String>>();
+		Set<String> sources = new LinkedHashSet<String>();
+		HashMap<String, Set<String>> training = new HashMap<String, Set<String>>();
 		TrainingResponse response = new TrainingResponse();
 		InitializeBeliefs beliefs = new InitializeBeliefs();
 		CreateGraph newEdge = new CreateGraph();
@@ -51,7 +53,7 @@ public class DummyGraphTest {
 		training.put(claim, sources);
 		
 		claim = new String();
-		sources = new ArrayList<String>();
+		sources = new LinkedHashSet<String>();
 		
 		claim = "c2";
 		sources.add("s1");
@@ -60,7 +62,7 @@ public class DummyGraphTest {
 		training.put(claim, sources);
 		
 		claim = new String();
-		sources = new ArrayList<String>();
+		sources = new LinkedHashSet<String>();
 		
 		claim = "c3";
 		sources.add("s1");

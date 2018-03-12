@@ -1,4 +1,4 @@
-package factFinders;
+package factfinders;
 
 import java.util.ArrayList;
 
