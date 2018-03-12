@@ -33,7 +33,6 @@ import trainingGraph.TrainingResponse;
  */
 public class BulkClaimTest {
 	
-	@SuppressWarnings("resource")
 	public static void main(String[] args) throws IOException {
 		SearchResult result = new SearchResult();
 		TrainingResponse response = new TrainingResponse();
