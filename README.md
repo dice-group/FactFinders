@@ -1,8 +1,7 @@
 # FactFinders
-Fact finders is an implementation based on Jeff Pasternack, 2010, reserach. This evaluatory project intends to implement the trustworthiness model and graph based fact finding algorithms for Open Data.
+Fact finders is an implementation based on Jeff Pasternack, 2010, research. This evaluatory project intends to implement the trustworthiness model and graph-based fact finding algorithms for Open Data.
 
-Search is federated for querying resources in Clueweb index, currently hosted at 131.234.28.255:6060
-Search uses Wordtnet Index for synonyms, in order to organize multiple possible queries. 
+Search is federated for querying resources in Clueweb index, Search uses Wordtnet Index for synonyms, in order to organize multiple possible queries. 
 
 # Properties.xml
 User is required to create an internal Properties.xml file with the content given below:
