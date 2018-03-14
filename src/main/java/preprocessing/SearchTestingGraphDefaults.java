@@ -22,8 +22,8 @@ public class SearchTestingGraphDefaults {
 	}
 	
 	public static void testingGraph() throws IOException {
-		BufferedReader boaPatterns = new BufferedReader(new FileReader("./src/main/resources/data/boapatterns.tsv"));
-		BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/resources/data/testinggraph.tsv"));
+		BufferedReader boaPatterns = new BufferedReader(new FileReader("./src/main/resources/data/wordnetpatterns.tsv"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/resources/data/CW_WN_testinggraph.tsv"));
 		BufferedReader trueClaims = new BufferedReader(new FileReader("./src/main/resources/data/testtriples.tsv"));
 		SearchResult result = new SearchResult();
 		SearchDefaults search = new SearchDefaults();

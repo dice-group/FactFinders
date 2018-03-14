@@ -43,7 +43,7 @@ public class SingleClaimTestWithDefaults {
 		Investment inv = new Investment();
 		PooledInvestment pool = new PooledInvestment();
 		String testTriples = "./src/main/resources/data/testinggraph_BOA_CW.tsv";
-		String resultFile = "./src/main/resources/newExperiments/SingleTF.nt";
+		String resultFile = "./src/main/resources/newExperiments/SingleInv.nt";
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));
 		Path path = Paths.get(resultFile);
 		Charset charset = StandardCharsets.UTF_8;
@@ -81,15 +81,15 @@ public class SingleClaimTestWithDefaults {
 			
 //			For Investmnet open the comment below
 			
-//			inv.trustScore(response.graph, response.sources);
+			inv.trustScore(response.graph, response.sources);
 			for(int i = 0; i < 20; i++) {
-				tf.trustScore(response.graph, response.sources);
-		        tf.beliefScore(response.graph, response.claims);
+				inv.trustScore(response.graph, response.sources);
+		        inv.beliefScore(response.graph, response.claims);
 		       }
 			
 			singleResults.put(result.claim, Double.toString(response.graph.getVertex(result.claim).getScore()));
 			
-//			System.out.println(result.claim);
+			System.out.println(result.claim);
 			response = newEdge.removeEdge(response, result);
 			response.graph = beliefs.initialize(response.graph, response.claims, "training");
 			
