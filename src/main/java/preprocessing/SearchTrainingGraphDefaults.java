@@ -22,8 +22,8 @@ public class SearchTrainingGraphDefaults {
 	}
 
 	public static void trainingGraph() throws IOException {
-		BufferedReader boaPatterns = new BufferedReader(new FileReader("./src/main/resources/data/boapatterns.tsv"));
-		BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/resources/data/traininggraph.tsv"));
+		BufferedReader boaPatterns = new BufferedReader(new FileReader("./src/main/resources/data/wordnetpatterns.tsv"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter("./src/main/resources/data/CW_WN_traininggraph.tsv"));
 		BufferedReader trueClaims = new BufferedReader(new FileReader("./src/main/resources/data/true_claims.tsv"));
 		SearchResult result = new SearchResult();
 		SearchDefaults search = new SearchDefaults();

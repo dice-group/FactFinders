@@ -121,6 +121,8 @@ public class SearchDefaults{
 					}
 					for (int i = 0; i < docCount; i++) {
 						JsonNode articleURLNode = hits.get("hits").get(i).get("_source").get("URL");
+//						String articleURL = articleURLNode.asText();
+
 						String articleURL = getDomainName(articleURLNode.asText());
 
 						if (!pageTitles.contains(articleURL)) {
