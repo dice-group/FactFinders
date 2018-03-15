@@ -1,78 +1,70 @@
 package factfinders;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import graphConstruct.Edge;
 import graphConstruct.Graph;
-import graphConstruct.Vertex;
 
+/**
+ * (Originally by Pasternack) Computing trust score as an average of belief in its claims
+ * It over-estimates the trustworthiness of a source with relatively few claims
+ * @author Hussain
+ */
 public class AverageLog implements Scores {
 
-	private double maxScore = 0;
-	private double avgScore = 0;
-	private int claimSet = 0;
-	private double beliefScore = 0;
+	private double maxScore;
+	private double avgScore;
+	private int claimSet;
+	private double beliefScore;
+	private Normalize normalize;
+
+	public AverageLog(double maxScore, double avgScore, int claimSet, double beliefScore) {
+		this.maxScore = maxScore;
+		this.avgScore = avgScore;
+		this.claimSet = claimSet;
+		this.beliefScore = beliefScore;
+		this.normalize = new Normalize();
+	}
+
+	public AverageLog() {
+		this.maxScore = 0;
+		this.avgScore = 0;
+		this.claimSet = 0;
+		this.beliefScore = 0;
+		this.normalize = new Normalize();
+	}
+
 	/**
-	 * (Originally by Pasternack) Computing trust score as an average of belief in its claims
-	 * It over-estimates the trustworthiness of a source with relatively few claims
-	 * @author Hussain
+	 * Belief scores are computed by adding the Trust Scores of the sources commiting the claim
 	 */
 	@Override
-	public void beliefScore(Graph graph, ArrayList<Vertex> claims) {
-		for(int i = 0; i < claims.size(); i++) {
-			if(graph.containsVertex(claims.get(i))) {
-				//System.out.println(graph.getVertex(sources.get(i).getLabel()).getNeighbors().toString());
-				for(Edge e : graph.getVertex(claims.get(i).getLabel()).getNeighbors()) {
-					//System.out.println(e.getNeighbor(sources.get(i)).toString());
-					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-//					graph.getVertex(claims.get(i).getLabel()).setScore(graph.getVertex(claims.get(i).getLabel()).getScore() + e.getNeighbor(claims.get(i)).getScore());
-					beliefScore +=  e.getNeighbor(claims.get(i)).getScore();
-					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-				}
-				graph.getVertex(claims.get(i).getLabel()).setScore(beliefScore);
-				beliefScore = 0;
+	public void beliefScore(Graph graph, Set<String> claims) {
+		for(String claim : claims) {
+			for(Edge e : graph.getVertex(claim).getNeighbors()) {
+				if(e.getClaim().getLabel() != claim)
+					beliefScore +=  e.getClaim().getScore();
 			}
+			graph.getVertex(claim).setScore(beliefScore);
+			beliefScore = 0;
 		}
-		maxScore = maxScoreFinder(graph, claims); 
-		normalize(graph, maxScore, claims);
+		maxScore = normalize.maxScoreFinder(graph, claims); 
+		normalize.avoidOverflow(graph, maxScore, claims);
 	}
 
+	/**
+	 * Trust scores for each score is calculated by adding the neighboring claims
+	 * This sum is averaged by the number of neighbors and enhanced by the Log-10 of neighbors count   
+	 */
 	@Override
-	public void trustScore(Graph graph, ArrayList<Vertex> sources) {
-		for(int i = 0; i < sources.size(); i++) {
-			if(graph.containsVertex(sources.get(i))) {
-				//System.out.println(graph.getVertex(sources.get(i).getLabel()).getNeighbors().toString());
-				for(Edge e : graph.getVertex(sources.get(i).getLabel()).getNeighbors()) {
-					//System.out.println(e.getNeighbor(sources.get(i)).toString());
-					//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-//					avgScore = graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore();
-					avgScore += e.getNeighbor(sources.get(i)).getScore();
-				}
-				claimSet = graph.getVertex(sources.get(i).getLabel()).getNeighborCount();
-				avgScore = (avgScore / claimSet)*Math.log10(claimSet);
-				graph.getVertex(sources.get(i).getLabel()).setScore(avgScore);
-				avgScore = 0;
-				//System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
+	public void trustScore(Graph graph, Set<String> sources) {
+		for(String source : sources) {
+			for(Edge e : graph.getVertex(source).getNeighbors()) {
+				avgScore += e.getSource().getScore();
 			}
-		}
-	}
-
-	private double maxScoreFinder(Graph graph, ArrayList<Vertex> vertices) {
-		double max = 0;
-		for(int i = 0; i < vertices.size(); i++) {
-			if(graph.containsVertex(vertices.get(i))) {
-				if(graph.getVertex(vertices.get(i).getLabel()).getScore() > max)
-					max = graph.getVertex(vertices.get(i).getLabel()).getScore();
-			}
-		}
-		return max;	
-	}
-	
-	private void normalize(Graph graph, double max, ArrayList<Vertex> vertices) {
-		for(int i = 0; i < vertices.size(); i++) {
-			if(graph.containsVertex(vertices.get(i))) {
-				graph.getVertex(vertices.get(i).getLabel()).setScore(graph.getVertex(vertices.get(i).getLabel()).getScore()/max);
-			}
+			claimSet = graph.getVertex(source).getNeighborCount();
+			avgScore = (avgScore / claimSet)*Math.log10(claimSet);
+			graph.getVertex(source).setScore(avgScore);
+			avgScore = 0;
 		}
 	}
 }

@@ -2,7 +2,6 @@ package algorithmsTests;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -19,6 +18,12 @@ import factfinders.Truthfinder;
 import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
 
+/**
+ * Edge removal is tested via this test.
+ * It verifies the removal of only the targeted edge, if either source or claim are shared between many edges.
+ * @author Hussain
+ *
+ */
 public class RemoveEdgeTest {
 
 	public String claim = new String();
@@ -49,7 +54,7 @@ public class RemoveEdgeTest {
 		response.claims = create.getClaims();
 		response.sources = create.getSources();
 		
-		response.graph = beliefs.initialize(response.graph, response.claims, "training");
+		response.graph = beliefs.initialize(response.graph, response.claims);
 		
 		/**
 		 * BulkClaimTest
@@ -59,7 +64,7 @@ public class RemoveEdgeTest {
 		result.sources.add("s2");
 		result.sources.add("s3");
 		response = newEdge.addEdge(response, result);
-		response.graph = beliefs.initialize(response.graph, result.claim, "testing");
+		response.graph = beliefs.initialize(response.graph, result.claim);
 	}
 	
 	@Test

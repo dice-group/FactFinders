@@ -1,79 +1,65 @@
 package factfinders;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import graphConstruct.Edge;
 import graphConstruct.Graph;
-import graphConstruct.Vertex;
 
+/**
+ * Hubs and Authorities (Kleinberg, 1999) adapted for claims and sources, 
+ * where sources refers as hubs and claims refers to authorities.
+ * Normalization: beliefScore(i)/max beleifScore(All Claims)
+ * 				  trustScore(i)/max trustScore(All Sources)
+ * @author Hussain
+ */
 public class Sums implements Scores {
 
-	private double maxScore = 0;
-	private double score = 0;
+	private double maxScore;
+	private double score;
+	private Normalize normalize;
+	
+	public Sums(double maxScore, double score) {
+		this.maxScore = maxScore;
+		this.score = score;
+		this.normalize = new Normalize();
+	}
+	
+	public Sums() {
+		this.maxScore = 0;
+		this.score = 0;
+		this.normalize = new Normalize();
+	}
 	
 	/**
-	 * Hubs and Authorities (Kleinberg, 1999) adapted for claims and sources, 
-	 * where sources refers as hubs and claims refers to authorities.
-	 * Normalization: beliefScore(i)/max beleifScore(All Claims)
-	 * 				  trustScore(i)/max trustScore(All Sources)
-	 * @author Hussain
+	 * Belief scores is the accumulation of the trust scores of its neighbors
 	 */
 	@Override
-	public void beliefScore(Graph graph, ArrayList<Vertex> claims) {
-		for(int i = 0; i < claims.size(); i++) {
-			if(graph.containsVertex(claims.get(i))) {
-				//System.out.println(graph.getVertex(sources.get(i).getLabel()).getNeighbors().toString());
-				for(Edge e : graph.getVertex(claims.get(i).getLabel()).getNeighbors()) {
-//					System.out.println(e.getNeighbor(claims.get(i)).toString());
-//					System.out.println(claims.get(i).getLabel() + graph.getVertex(claims.get(i).getLabel()).getScore());
-//					graph.getVertex(claims.get(i).getLabel()).setScore(graph.getVertex(claims.get(i).getLabel()).getScore() + e.getNeighbor(claims.get(i)).getScore());
-					score +=  e.getNeighbor(claims.get(i)).getScore();
-//					System.out.println(score);
-				}
-				graph.getVertex(claims.get(i).getLabel()).setScore(score);
-				score = 0;
+	public void beliefScore(Graph graph, Set<String> claims) {
+		for(String claim : claims) {
+			for(Edge e : graph.getVertex(claim).getNeighbors()) {
+				if(e.getClaim().getLabel() != claim)
+					score +=  e.getClaim().getScore();
 			}
+			graph.getVertex(claim).setScore(score);
+			score = 0;
 		}
-		maxScore = maxScoreFinder(graph, claims); 
-		normalize(graph, maxScore, claims);
+		maxScore = normalize.maxScoreFinder(graph, claims); 
+		normalize.avoidOverflow(graph, maxScore, claims);
 	}
 
+	/**
+	 * Trust scores is the accumulation of the belief scores of its neighbors
+	 */
 	@Override
-	public void trustScore(Graph graph, ArrayList<Vertex> sources) {
-		for(int i = 0; i < sources.size(); i++) {
-			if(graph.containsVertex(sources.get(i))) {
-//				System.out.println(graph.getVertex(sources.get(i).getLabel()).getNeighbors().toString());
-				for(Edge e : graph.getVertex(sources.get(i).getLabel()).getNeighbors()) {
-//					System.out.println(e.getNeighbor(sources.get(i)).toString());
-//					System.out.println(sources.get(i).getLabel() + graph.getVertex(sources.get(i).getLabel()).getScore());
-//					graph.getVertex(sources.get(i).getLabel()).setScore(graph.getVertex(sources.get(i).getLabel()).getScore() + e.getNeighbor(sources.get(i)).getScore());
-					score += e.getNeighbor(sources.get(i)).getScore();
-//					System.out.println(score);
-				}
-				graph.getVertex(sources.get(i).getLabel()).setScore(score);
-				score = 0;
+	public void trustScore(Graph graph, Set<String> sources) {
+		for(String source : sources) {
+			for(Edge e : graph.getVertex(source).getNeighbors()) {
+				score += e.getSource().getScore();
 			}
+			graph.getVertex(source).setScore(score);
+			score = 0;
 		}
-		maxScore = maxScoreFinder(graph, sources); 
-		normalize(graph, maxScore, sources);
-	}
-
-	private double maxScoreFinder(Graph graph, ArrayList<Vertex> vertices) {
-		double max = 0;
-		for(int i = 0; i < vertices.size(); i++) {
-			if(graph.containsVertex(vertices.get(i))) {
-				if(graph.getVertex(vertices.get(i).getLabel()).getScore() > max)
-					max = graph.getVertex(vertices.get(i).getLabel()).getScore();
-			}
-		}
-		return max;	
-	}
-	
-	private void normalize(Graph graph, double max, ArrayList<Vertex> vertices) {
-		for(int i = 0; i < vertices.size(); i++) {
-			if(graph.containsVertex(vertices.get(i))) {
-				graph.getVertex(vertices.get(i).getLabel()).setScore(graph.getVertex(vertices.get(i).getLabel()).getScore()/max);
-			}
-		}
+		maxScore = normalize.maxScoreFinder(graph, sources); 
+		normalize.avoidOverflow(graph, maxScore, sources);
 	}
 }

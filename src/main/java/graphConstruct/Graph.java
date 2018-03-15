@@ -19,8 +19,8 @@ public class Graph {
     private HashMap<Integer, Edge> edges;
     
     public Graph(){
-        this.vertices = new HashMap<String, Vertex>();
-        this.edges = new HashMap<Integer, Edge>();
+        this.vertices = new HashMap<String, Vertex>(); // Label of the vertex is it key
+        this.edges = new HashMap<Integer, Edge>(); // Integer is used as a key to assure No-Duplicate-Edges
     }
     
     /**
@@ -191,6 +191,10 @@ public class Graph {
     public Set<Edge> getEdges(){
         return new HashSet<Edge>(this.edges.values());
     }
+
+	public boolean containsVertex(String vertex) {
+		return this.vertices.get(vertex) != null;
+	}
     
 }
 

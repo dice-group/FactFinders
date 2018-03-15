@@ -2,7 +2,6 @@ package algorithmsTests;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -19,6 +18,12 @@ import factfinders.Truthfinder;
 import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
 
+/**
+ * It tests for all the algorithms for a very small graph.
+ * Algorithms were solved manually to verify the assertions
+ * @author Hussain
+ *
+ */
 public class AllAlgosTests {
 
 	public String claim = new String();
@@ -48,7 +53,7 @@ public class AllAlgosTests {
 		response.claims = create.getClaims();
 		response.sources = create.getSources();
 		
-		response.graph = beliefs.initialize(response.graph, response.claims, "training");
+		response.graph = beliefs.initialize(response.graph, response.claims);
 		
 		/**
 		 * BulkClaimTest
@@ -57,7 +62,7 @@ public class AllAlgosTests {
 		result.sources.add("s1");
 		result.sources.add("s2");
 		response = newEdge.addEdge(response, result);
-		response.graph = beliefs.initialize(response.graph, result.claim, "testing");
+		response.graph = beliefs.initialize(response.graph, result.claim);
 	}
 	
 	@Test

@@ -1,83 +1,42 @@
 package factfinders;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import graphConstruct.Graph;
-import graphConstruct.Vertex;
 
 /**
- * 
+ * Beliefs are to be initialized before the execution of algorithms
+ * Training claims are initialized with "1.0"; the certainty of being facts
+ * Test claims are initialized with "0.5"; the ambiguity between facts/false claims
  * @author Hussain
  *
  */
 public class InitializeBeliefs {
 	
-	private double fixedBelief = 0.5;
-	private double uniformBelief = 0.5;
-	private double votedBelief = 0;
-	private double trainBelief = 1.0;
-	private double testBelief = 0.5;
+	private double trainBelief;
+	private double testBelief;
 	
-	public Graph initialize(Graph graph, ArrayList<Vertex> claims, String factfinder) {	
-		if(factfinder == "Sums") {
-			for(int i = 0; i < claims.size(); i++) {
-			   graph.getVertex(claims.get(i).getLabel()).setScore(fixedBelief); 
-			   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-			}
-		}
-		else if(factfinder == "Avg") {
-			for(int i = 0; i < claims.size(); i++) {
-		 	   graph.getVertex(claims.get(i).getLabel()).setScore(fixedBelief); 
-		 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-		}
-		}
-		else if(factfinder == "training") {
-			for(int i = 0; i < claims.size(); i++) {
-//				System.out.println( graph.getVertex(claims.get(i).getLabel()).getLabel());
-			 	graph.getVertex(claims.get(i).getLabel()).setScore(trainBelief);  
-//			 	System.out.println( graph.getVertex(claims.get(i).getLabel()).getLabel() +" : "+ graph.getVertex(claims.get(i).getLabel()).getScore());
-			}
-		}
-		else if(factfinder == "Pool") {
-			uniformBelief = 1/2;
-			for(int i = 0; i < claims.size(); i++) {
-				graph.getVertex(claims.get(i).getLabel()).setScore(uniformBelief); 
-				System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-			}
-		}
-		else if(factfinder == "Tf") {
-			uniformBelief = 1/2;
-			for(int i = 0; i < claims.size(); i++) {
-			 	 graph.getVertex(claims.get(i).getLabel()).setScore(uniformBelief); 
-			 	 System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-			}
-		}
-		else {
-			for(int i = 0; i < claims.size(); i++) {
-			 	   graph.getVertex(claims.get(i).getLabel()).setScore(1); 
-			 	   System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-			}
+	public InitializeBeliefs(double trainBelief, double testBelief) {
+		this.trainBelief = trainBelief;
+		this.testBelief = testBelief;
+	}
+	
+	public InitializeBeliefs() {
+		this.trainBelief = 1.0;
+		this.testBelief = 0.5;
+	}
+
+	public Graph initialize(Graph graph, Set<String> claims) {	
+		for(String c : claims) {
+			graph.getVertex(c).setScore(trainBelief);  
 		}
 		return graph;
 	}
 
-	public Graph initialize(Graph graph, ArrayList<Vertex> claims, ArrayList<Vertex> sources) {
-		for(int i = 0; i < claims.size(); i++) {
-			votedBelief = (double)(graph.getVertex(claims.get(i).getLabel()).getNeighborCount())/(double)sources.size();
-			graph.getVertex(claims.get(i).getLabel()).setScore(votedBelief); 
-			System.out.println( graph.getVertex(claims.get(i).getLabel()) +","+ graph.getVertex(claims.get(i).getLabel()).getScore());  
-		}
+	public Graph initialize(Graph graph, String claim) {
+		
+		graph.getVertex(claim).setScore(testBelief); 
 		return graph;
 	}
 
-	public Graph initialize(Graph graph, String claim, String factfinder) {
-		for(Vertex c : graph.vertices()) {
-			if(c.getLabel() == claim) {
-				 graph.getVertex(c.getLabel()).setScore(testBelief); 
-//			 	   System.out.println( graph.getVertex(c.getLabel()) +","+ graph.getVertex(c.getLabel()).getScore());
-			}  
-		}
-		return graph;
-	}
-	
 }

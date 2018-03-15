@@ -1,10 +1,9 @@
 package factfinders;
 
-import java.util.ArrayList;
+import java.util.Set;
 
 import graphConstruct.Edge;
 import graphConstruct.Graph;
-import graphConstruct.Vertex;
 
 /**
  * (Originally by Pasternack) Sources "invest" their trust uniformly in claims.
@@ -15,111 +14,87 @@ import graphConstruct.Vertex;
  */
 public class Investment implements Scores {
 
-	// the investment of each source in its neighbors
 	private double invScore;
-	// set of sources as neighbors
 	private int claimSet;
-	// the investment of the other sources in every neighbor of the source
 	private double furtherInvestment;
-	// maximum score to normalize the scores
 	private double maxScore;
+	private Normalize normalize;
+
+	public Investment(double invScore, int claimSet, double furtherInvestment, double maxScore) {
+		this.invScore = invScore;
+		this.claimSet = claimSet;
+		this.furtherInvestment = furtherInvestment;
+		this.maxScore = maxScore;
+		this.normalize = new Normalize();
+	}
 
 	public Investment() {
-		invScore = 0;
-		claimSet = 0;
-		furtherInvestment = 0;
-		maxScore = 0;
+		this.invScore = 0;
+		this.claimSet = 0;
+		this.furtherInvestment = 0;
+		this.maxScore = 0;
+		this.normalize = new Normalize();
 	}
 
+	/**
+	 * Belief scores are calculated by taking the ratio of the score of the source investing in a particular claim
+	 * with all the claims it invests in. The score of every claim is raised to a fixed power of "1.2" to 
+	 * accomplish non-linearity of belief scores
+	 */
 	@Override
-	public void beliefScore(Graph graph, ArrayList<Vertex> claims) {
-		for (final Vertex claim : claims) {
-			if (graph.containsVertex(claim)) {
-				// System.out.println(graph.getVertex(sources.get(i).getLabel()).getNeighbors().toString());
-				for (final Edge e : graph.getVertex(claim.getLabel()).getNeighbors()) {
-					// System.out.println(e.getNeighbor(sources.get(i)).toString());
-					// System.out.println(sources.get(i).getLabel() +
-					// graph.getVertex(sources.get(i).getLabel()).getScore());
-					claimSet = graph.getVertex(e.getNeighbor(claim).getLabel()).getNeighborCount();
-					// invScore = graph.getVertex(claims.get(i).getLabel()).getScore() +
-					// (e.getNeighbor(claims.get(i)).getScore()/(double)claimSet);
-					invScore += (e.getNeighbor(claim).getScore() / claimSet);
+	public void beliefScore(Graph graph, Set<String> claims) {
+		for (String claim : claims) {
+			for (Edge e : graph.getVertex(claim).getNeighbors()) {
+				if(e.getClaim().getLabel() != claim) {
+					claimSet = graph.getVertex(e.getClaim().getLabel()).getNeighborCount();
+					invScore += (e.getClaim().getScore() / claimSet);
 				}
-				invScore = Math.pow(invScore, 1.2);
-				graph.getVertex(claim.getLabel()).setScore(invScore);
-				invScore = 0;
-				// System.out.println(sources.get(i).getLabel() +
-				// graph.getVertex(sources.get(i).getLabel()).getScore());
 			}
+			invScore = Math.pow(invScore, 1.2);
+			graph.getVertex(claim).setScore(invScore);
+			invScore = 0;
 		}
-		maxScore = maxScoreFinder(graph, claims);
-		normalize(graph, maxScore, claims);
+		maxScore = normalize.maxScoreFinder(graph, claims);
+		normalize.avoidOverflow(graph, maxScore, claims);
 	}
 
+	/**
+	 * Trust scores are calculated with three folds:
+	 * 1. Source takes it initial trust score and accumulates it with all the claims which got investment by that source
+	 * 2. It distributes its score with the scores of OTHER sources which have invested in its claims
+	 * 3. Further it gets the similar distribution for those claims being invested by the OTHER sources
+	 */
 	@Override
-	public void trustScore(Graph graph, ArrayList<Vertex> sources) {
-		for (final Vertex source : sources) {
-			if (graph.containsVertex(source)) {
-				if (graph.getVertex(source.getLabel()).getScore() == 0.0) {
-					for (final Edge e : graph.getVertex(source.getLabel()).getNeighbors()) {
-						if (!(e == null) && graph.getVertex(source.getLabel()).getScore() == 0.0) {
-							graph.getVertex(source.getLabel()).setScore(1.0);
-							// System.out.println(sources.get(i).getLabel() +"
-							// "+graph.getVertex(sources.get(i).getLabel()).getScore());
-						}
-					}
-				} else {
-					for (final Edge e : graph.getVertex(source.getLabel()).getNeighbors()) {
-						// System.out.println(graph.getVertex(sources.get(i).getLabel()).getNeighbors());
-						for (final Edge ed : graph.getVertex(e.getNeighbor(source).getLabel()).getNeighbors()) {
-							// System.out.println(graph.getVertex(e.getNeighbor(sources.get(i)).getLabel()).getNeighbors());
-							claimSet = graph.getVertex(ed.getNeighbor(e.getNeighbor(source)).getLabel())
-									.getNeighborCount();
-							// System.out.println(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel() +
-							// ":" +claimSet);
-							// System.out.println(investment);
-							furtherInvestment += graph.getVertex(ed.getNeighbor(e.getNeighbor(source)).getLabel())
-									.getScore() / claimSet;
-							// System.out.println(ed.getNeighbor(e.getNeighbor(sources.get(i))).getLabel() +
-							// " : " +investment);
-						}
-						claimSet = graph.getVertex(source.getLabel()).getNeighborCount();
-						// System.out.println(sources.get(i).getLabel()+ ">" +claimSet);
-						invScore = graph.getVertex(source.getLabel()).getScore()
-								/ (claimSet * furtherInvestment);
-						// System.out.println(graph.getVertex(sources.get(i).getLabel()).getScore());
-						invScore += e.getNeighbor(source).getScore() * invScore;
-						// System.out.println(graph.getVertex(sources.get(i).getLabel()) + " : " +
-						// invScore);
-					}
-					// System.out.println("The new trust score for " +sources.get(i)+ ":"+
-					// invScore);
-					graph.getVertex(source.getLabel()).setScore(invScore);
-					furtherInvestment = 0;
+	public void trustScore(Graph graph, Set<String> sources) {
+		for (String source : sources) {
+			for (Edge e : graph.getVertex(source).getNeighbors()) {
+				for (Edge ed : graph.getVertex(e.getSource().getLabel()).getNeighbors()) {
+					claimSet = graph.getVertex(ed.getClaim().getLabel()).getNeighborCount();
+					furtherInvestment += graph.getVertex(ed.getClaim().getLabel())
+							.getScore() / claimSet;
 				}
+				claimSet = graph.getVertex(source).getNeighborCount();
+				invScore = graph.getVertex(source).getScore()
+						/ (claimSet * furtherInvestment);
+				invScore += e.getSource().getScore() * invScore;
 			}
+			graph.getVertex(source).setScore(invScore);
+			furtherInvestment = 0;
 		}
-		maxScore = maxScoreFinder(graph, sources);
-		normalize(graph, maxScore, sources);
+		maxScore = normalize.maxScoreFinder(graph, sources);
+		normalize.avoidOverflow(graph, maxScore, sources);
 	}
-
-	private double maxScoreFinder(Graph graph, ArrayList<Vertex> vertices) {
-		double max = 0;
-		for (final Vertex v : vertices) {
-			if (graph.containsVertex(v)) {
-				if (graph.getVertex(v.getLabel()).getScore() > max) {
-					max = graph.getVertex(v.getLabel()).getScore();
-				}
-			}
+	
+	/**
+	 * Initialize the initial trust scores for sources, It is necessary for first iteration of Investment algorithm.
+	 * @param graph
+	 * @param sources
+	 * @return
+	 */
+	public Graph initializeTrustScore(Graph graph, Set<String> sources) {
+		for(String s : sources) {
+			graph.getVertex(s).setScore(1.0);  
 		}
-		return max;
-	}
-
-	private void normalize(Graph graph, double max, ArrayList<Vertex> vertices) {
-		for (final Vertex v : vertices) {
-			if (graph.containsVertex(v)) {
-				graph.getVertex(v.getLabel()).setScore(graph.getVertex(v.getLabel()).getScore() / max);
-			}
-		}
+		return graph;
 	}
 }

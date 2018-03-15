@@ -15,12 +15,18 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.util.FileManager;
 
 /**
- * 
+ * RDF triplizer read the model RDF from an RDF resource file
+ * It extracts the subject object and predicate from RDF triples 
  * @author Hussain
  *
  */
-public class RDFTriplizer {
-	
+public class RDFTriplizer implements Triplize {
+
+	/**
+	 * It reads the model on the basis of type of file
+	 * @param fileNameOrUri
+	 * @return
+	 */
 	public static Model readModel(String fileNameOrUri)
 	{
 		Model model= ModelFactory.createDefaultModel();
@@ -39,7 +45,14 @@ public class RDFTriplizer {
 		}
 		return model;
 	}
-	
+
+	/**
+	 * Generates triples containing subject, object and predicate from an RDF Statement(Node)
+	 * The results generate a TSV file which are used in training and testing
+	 * @param input
+	 * @return
+	 * @throws IOException
+	 */
 	private static String triplify(Model input) throws IOException {
 		Set<Resource> set = new HashSet<Resource>();
 		String file = "./src/main/resources/data/testtriples.tsv";
@@ -53,22 +66,20 @@ public class RDFTriplizer {
 		while (iter.hasNext()) {
 
 			Statement stmt = iter.nextStatement(); 
-			
+
 			Resource subject = stmt.getSubject(); 
 			if(set.contains(subject)) {
 				continue;
 			}
 			StmtIterator iter_obj = input.listStatements(subject, null, (RDFNode)null);
-			
+
 			while(iter_obj.hasNext()) {
 				Statement statement = iter_obj.nextStatement();
-				//System.out.println(statement.toString());
-//				 && statement.getObject().toString().contains("1.0")
+				//				 && statement.getObject().toString().contains("1.0")
 				if(statement.getPredicate().toString().contains("hasTruthValue")) {
 					StmtIterator iter_obj1 = input.listStatements(subject, null, (RDFNode)null);
 					while(iter_obj1.hasNext()) {
 						Statement stsub = iter_obj1.nextStatement();
-						//System.out.println("The inner: " + stsub.toString());
 						if(stsub.getPredicate().toString().contains("hasTruthValue")) {
 							test.append("<");
 							test.append(stsub.getSubject().toString());
@@ -78,7 +89,6 @@ public class RDFTriplizer {
 							test.append(stsub.getPredicate().toString());
 							test.append(">");
 							test.append(" ");
-							//System.out.println("Subject: " + sub);
 						}
 						if(stsub.getPredicate().toString().contains("subject")) {
 							sub = stsub.getObject().toString();
@@ -87,10 +97,8 @@ public class RDFTriplizer {
 								Statement stment = iterSub.nextStatement();
 								if(stment.getSubject().toString().equals(sub)) {
 									sub = stment.getObject().toString();
-									//System.out.println("Subject: " + sub);
 								}
 							}
-							//System.out.println("Subject: " + sub);
 						}
 						else if(stsub.getPredicate().toString().contains("object")) {
 							obj = stsub.getObject().toString();
@@ -99,14 +107,11 @@ public class RDFTriplizer {
 								Statement stment = iterobj.nextStatement();
 								if(stment.getSubject().toString().equals(obj)) {
 									obj = stment.getObject().toString();
-									//System.out.println("object: " + obj);
 								}
 							}
-							//System.out.println("object: " + obj);
 						}
 						else if(stsub.getPredicate().toString().contains("predicate")) {
 							pred = stsub.getObject().toString().replaceAll("_", " ").replace("http://dbpedia.org/ontology/", " ").trim();
-							//System.out.println("predicate: " + pred);
 						}
 					}
 					writer.append(sub);
@@ -127,18 +132,16 @@ public class RDFTriplizer {
 		writer.close();
 		return file;
 	}
-	
+
+	@Override
 	public String triplize(String file) throws IOException {
 		Model model= readModel(file);
-
 		return triplify(model);
 	}
 
-//	public static void main(String[] args) throws IOException {
-//
-//		Model model= readModel("./src/main/resources/test.nt");
-//
-//		triplify(model);
-//
-//	}
+	public static void main(String[] args) throws IOException {
+		Model model= readModel("./src/main/resources/test.nt");
+		triplify(model);
+
+	}
 }

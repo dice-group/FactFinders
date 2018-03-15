@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org._3pq.jgrapht.DirectedGraph;
+import org._3pq.jgrapht.graph.DefaultDirectedGraph;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -19,13 +21,12 @@ import graphPlotter.CreateGraph;
 import trainingGraph.TrainingResponse;
 
 /**
- * This test ensures the creation of graph, while mocking both the testing and training phases
- * of FactFinders.
- * Edges, Vertices, Sources and Claims are verified by this test.
+ * This simple JUnit Test verifies the creation of directed graph by 
+ * JGraphT library
  * @author Hussain
  *
  */
-public class GraphTests {
+public class JGraphTTests {
 
 	public String claim = new String();
 	public Set<String> sources = new LinkedHashSet<String>();
@@ -38,11 +39,12 @@ public class GraphTests {
 	public AverageLog avg = new AverageLog();
 	public Truthfinder tf = new Truthfinder();
 	public Investment inv = new Investment();
+	DirectedGraph graph = new DefaultDirectedGraph();
 	
 	@Before
 	public void plotDummyGraph(){
 		/**
-		 * Training
+		 * TrainingWithSearch
 		 */
 		claim = "c1";
 		sources.add("s1");
@@ -51,33 +53,31 @@ public class GraphTests {
 		sources.add("s6");
 		training.put(claim, sources);
 		
-		CreateGraph create = new CreateGraph(training);
-		response.graph = create.getGraph();
-		response.claims = create.getClaims();
-		response.sources = create.getSources();
-		
-		response.graph = beliefs.initialize(response.graph, response.claims);
+		graph.addVertex(claim);
+		graph.addAllVertices(sources);
+		for(String source : sources)
+			graph.addEdge(claim, source);
 		
 		/**
-		 * Single Claim test
+		 * BulkClaimTest
 		 */
 		result.claim = "c2";
 		result.sources.add("s1");
 		result.sources.add("s2");
 		result.sources.add("s3");
 		result.sources.add("s4");
-		response = newEdge.addEdge(response, result);
-		response.graph = beliefs.initialize(response.graph, result.claim);
+		graph.addVertex(result.claim);
+		graph.addAllVertices(result.sources);
+		for(String source : result.sources)
+			graph.addEdge(result.claim, source);
 	}
 	
 	@Test
 	public void graphTest() {
-		assertNotNull(response.graph.vertexKeys().size());
-		assertNotNull(response.graph.getEdges().size());
-		assertEquals(response.claims.size(), 2);
-		assertEquals(response.sources.size(), 5);
-		assertEquals(response.graph.vertexKeys().size(), 7);
-		assertEquals(response.graph.getEdges().size(), 8);
+		assertNotNull(graph.vertexSet().size());
+		assertNotNull(graph.edgeSet().size());
+		assertEquals(graph.vertexSet().size(), 7);
+		assertEquals(graph.edgeSet().size(), 8);
 	}
 
 }
