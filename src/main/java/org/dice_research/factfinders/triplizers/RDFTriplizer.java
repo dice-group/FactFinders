@@ -63,6 +63,9 @@ public class RDFTriplizer implements Triplize {
 		String obj = new String();
 		String pred = new String();
 
+		/*
+		 * To-Do has to reduce complexity. 
+		 */
 		while (iter.hasNext()) {
 
 			Statement stmt = iter.nextStatement(); 

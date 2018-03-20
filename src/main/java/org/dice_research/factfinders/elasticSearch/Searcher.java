@@ -58,13 +58,13 @@ public abstract class Searcher implements Search{
 	 * @throws MalformedURLException
 	 */
 	public static String getDomainName(String url) throws MalformedURLException{
-		if(!url.startsWith("http") && !url.startsWith("https")){
+		if(!url.startsWith("http")){
 			url = "http://" + url;
 		}        
 		URL netUrl = new URL(url);
 		String host = netUrl.getHost();
 		if(host.startsWith(W_W_W)){
-			host = host.substring(W_W_W.length()+1);
+			host = host.substring(4);
 		}
 		return host;
 	}

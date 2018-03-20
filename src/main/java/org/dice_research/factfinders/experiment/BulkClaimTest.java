@@ -43,7 +43,7 @@ public class BulkClaimTest {
 		AverageLog avg = new AverageLog();
 		Truthfinder tf = new Truthfinder();
 		Investment inv = new Investment();
-		String testTriples = "./src/main/resources/data/testtriples.tsv";
+		String testTriples = "./src/main/resources/data/testData/testtriples.tsv";
 		String resultFile = "./src/main/resources/newExperiments/Sum.nt";
 		BufferedReader reader = new BufferedReader(new FileReader(testTriples));
 		BufferedReader TSVFile = new BufferedReader(new FileReader(testTriples));

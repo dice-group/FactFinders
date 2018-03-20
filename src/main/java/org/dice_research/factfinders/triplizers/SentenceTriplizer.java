@@ -1,10 +1,8 @@
 package org.dice_research.factfinders.triplizers;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -87,11 +85,9 @@ public class SentenceTriplizer {
 
 	}
 
-	public Map<Integer,SentenceTriple> extractTriples(String text) {
+	public ArrayList<SentenceTriple> extractTriples(String text) {
 
-		int sentenceId = 0;
-
-		Map<Integer,SentenceTriple> tripleList = new HashMap<Integer,SentenceTriple>();
+		ArrayList<SentenceTriple> tripleList = new ArrayList<SentenceTriple>();
 
 		Annotation document = pipeline.process(text);
 
@@ -102,8 +98,7 @@ public class SentenceTriplizer {
 			System.out.println(triple.getSubject());
 			System.out.println(triple.getPredicate());
 			System.out.println(triple.getObject());
-			tripleList.put(sentenceId, triple);
-			sentenceId++;
+			tripleList.add(triple);
 		}
 
 

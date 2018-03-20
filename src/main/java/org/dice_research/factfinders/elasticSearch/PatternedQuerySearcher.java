@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -28,20 +28,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PatternedQuerySearcher extends Searcher{
 
-	public Set<String> pageTitles;
-	private SearchResult searchResult;
 	private String[] parts;
 	private String subject;
 	private String property;
 	private String object;
-	private PatternFinder wordnetPatternGenerator;
-	private String indexLink;
-
-	public PatternedQuerySearcher(){
-		this.indexLink = "/clueweb/articles/_search";
-		this.searchResult = new SearchResult();
-		this.wordnetPatternGenerator = new WordnetPatternGenerator();
-	}
+	private PatternFinder wordnetPatternGenerator = new WordnetPatternGenerator();
 
 	/**
 	 * This query function queries the index (either clue-web or Wiki-dump for these experiments)
@@ -52,16 +43,16 @@ public class PatternedQuerySearcher extends Searcher{
 	@Override
 	public SearchResult query(String claim) {
 		try {
-			this.pageTitles = new LinkedHashSet<String>();
-			Set<String> growList  = new LinkedHashSet<String>();
-			this.pageTitles = new LinkedHashSet<String>();
+			SearchResult searchResult = new SearchResult();
+			Set<String> pageTitles = new HashSet<String>();
+			Set<String> growList  = new HashSet<String>();
 			claimParser(claim);
 			normalize();
 			Set<String> propertyWords = wordnetPatternGenerator.querryPatterns(property);
 			if(propertyWords == null) {
-				String q1 = String.format("\"%s %s %s\"", subject, property, object);
+				String q1 = String.format("\"%s %s %s\"", this.subject, this.property, this.object);
 				if ( property.equals("??? NONE ???") )
-					q1 = String.format("\"%s %s\"", subject, object);
+					q1 = String.format("\"%s %s\"", this.subject, this.object);
 
 				growList = singleSearch(q1);
 				if(growList != null)
@@ -73,9 +64,9 @@ public class PatternedQuerySearcher extends Searcher{
 			}
 			else {
 				for(String predicate : propertyWords) {
-					String q1 = String.format("\"%s %s %s\"", subject, predicate, object);
+					String q1 = String.format("\"%s %s %s\"", this.subject, predicate, this.object);
 					if ( predicate.equals("??? NONE ???") )
-						q1 = String.format("\"%s %s\"", subject, object);
+						q1 = String.format("\"%s %s\"", this.subject, this.object);
 
 					growList = singleSearch(q1);
 					if(growList != null)
@@ -105,18 +96,19 @@ public class PatternedQuerySearcher extends Searcher{
 	@Override
 	public SearchResult query(String claim, ArrayList<String> propertyWords) {
 		try {
-			this.pageTitles = new LinkedHashSet<String>();
-			Set<String> growList  = new LinkedHashSet<String>();
+			SearchResult searchResult = new SearchResult();
+			Set<String> pageTitles = new HashSet<String>();
+			Set<String> growList  = new HashSet<String>();
 			claimParser(claim);
 			normalize();
 
 			for(String predicate : propertyWords) {
 				String q1;
 				if(predicate.equals("No_Pattern")) {
-					q1 = String.format("\"%s %s %s\"", subject, property, object);
+					q1 = String.format("\"%s %s %s\"", this.subject, this.property, this.object);
 				}
 				else
-					q1 = String.format("\"%s %s %s\"", subject, predicate.trim(), object);
+					q1 = String.format("\"%s %s %s\"", this.subject, predicate.trim(), this.object);
 				
 				growList = singleSearch(q1);
 				if(growList != null)
@@ -157,11 +149,11 @@ public class PatternedQuerySearcher extends Searcher{
 	}
 
 	/**
-	 * Single search implements the singelton search on the index the result is returned to the caller
+	 * Single search implements the singleton search on the index the result is returned to the caller
 	 */
 	private Set<String> singleSearch(String query){
 		try {
-			Set<String> searchList = new LinkedHashSet<String>();
+			Set<String> searchList = new HashSet<String>();
 			HttpEntity entity1 = new NStringEntity(
 					"{\n" +
 							"	\"size\" : 10000,\n" +
@@ -175,7 +167,7 @@ public class PatternedQuerySearcher extends Searcher{
 							"} \n"+
 							"}", ContentType.APPLICATION_JSON);
 			long start = System.nanoTime();					
-			response = restClientobj.performRequest("GET", indexLink ,Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
+			response = restClientobj.performRequest("GET", "/clueweb/articles/_search" ,Collections.singletonMap("pretty", "true"),entity1, consumerFactory);
 			System.out.print("Search on server took " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start) + " seconds \n");
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(response.getEntity().getContent(), "UTF-8"));		

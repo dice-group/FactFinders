@@ -26,8 +26,8 @@ import org.apache.solr.common.SolrDocumentList;
 
 public class BOAPatternGenerator implements PatternFinder{
 
-	private static HttpSolrServer enIndex;
-	private static Map<String,QueryResponse> queryCache = new HashMap<>();
+	private HttpSolrServer enIndex;
+	private Map<String,QueryResponse> queryCache = new HashMap<>();
 
 	public BOAPatternGenerator() {
 		enIndex = new HttpSolrServer("http://139.18.2.164:8080/solr/boa_en/");
@@ -84,10 +84,6 @@ public class BOAPatternGenerator implements PatternFinder{
 
 				String pattern = new String();
 				pattern = (String) d.get("nlr-var");
-				//                String generalized = (String) d.get("nlr-gen");
-				//                String naturalLanguageRepresentationWithoutVariables = (String) d.get("nlr-no-var");
-				//                String posTags = (String) d.get("pos");
-
 
 				// only add the first pattern, we don't want to override the better scored pattern
 				if ( !pattern.trim().isEmpty() && !patterns.containsKey(pattern)  
@@ -127,7 +123,7 @@ public class BOAPatternGenerator implements PatternFinder{
 	
 //	public static void main(String[] args) {
 //
-//		queryPatterns("http://dbpedia.org/ontology/married");
+//		System.out.println(querryPatterns("http://dbpedia.org/ontology/married"));
 //		System.out.println("--------------");
 //	}
 

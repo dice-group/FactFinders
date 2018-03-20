@@ -7,9 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.dice_research.factfinders.triplizers.SentenceTriple;
 import org.dice_research.factfinders.triplizers.SentenceTriplizer;
 
@@ -63,10 +60,10 @@ public class GenerateSentenceTriples {
 			System.out.println(fact);
 			SentenceTriplizer triplizer = new SentenceTriplizer();
 			triplizer.init();
-			Map<Integer, SentenceTriple> results = triplizer.extractTriples(fact);
+			ArrayList<SentenceTriple> results = triplizer.extractTriples(fact);
 
-			for(Entry<Integer, SentenceTriple> res: results.entrySet()){
-				SentenceTriple triple = res.getValue();
+			for(SentenceTriple res: results){
+				SentenceTriple triple = res;
 				for(String frag : triple.getSubject())
 					writer.append(frag);
 				writer.append('\t');
@@ -75,9 +72,6 @@ public class GenerateSentenceTriples {
 				for(String frag : triple.getObject())
 					writer.append(frag);
 				writer.append('\n');
-				//System.out.println(res.getKey());
-				//System.out.println( triple.getPredicate() + "(" + triple.getSubject() + "," +  triple.getObject() + ")");
-				//System.out.println("...");
 			}
 		}
 		writer.flush();

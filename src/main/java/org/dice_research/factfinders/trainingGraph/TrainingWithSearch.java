@@ -28,7 +28,7 @@ public class TrainingWithSearch implements Trainer {
 
 		PatternedQuerySearcher search = new PatternedQuerySearcher();
 
-		String inputFile = "./src/main/resources/data/true_claims.tsv";
+		String inputFile = "./src/main/resources/data/trainData/true_claims.tsv";
 		BufferedReader TSVFile = new BufferedReader(new FileReader(inputFile));
 		String dataRow = TSVFile.readLine();
 		long start;
